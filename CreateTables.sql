@@ -99,3 +99,7 @@ CREATE TABLE VisitUsesFacility
   FOREIGN KEY (VisitId) REFERENCES Visit(id),
   FOREIGN KEY (FacilityId) REFERENCES Facility(id)
 );
+
+CREATE VIEW VisitorAge
+  AS SELECT *, AGE(Birthday) AS Age
+  FROM RegisteredVisitor;

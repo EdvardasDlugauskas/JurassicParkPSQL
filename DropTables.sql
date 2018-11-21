@@ -6,13 +6,11 @@ DROP TABLE VisitBuysTicketEnclosure;
 
 DROP TABLE VisitUsesFacility;
 
-
 DROP TABLE Worker;
 
 DROP TABLE Dinosaur;
 
 DROP TABLE Enclosure;
-
 
 DROP TABLE Facility;
 
