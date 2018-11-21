@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="mif PSQL" read-only="true" uuid="571c5b60-22a1-4bce-bdf5-52976b835259">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <auto-commit>false</auto-commit>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://pgsql3.mif:5432/studentu</jdbc-url>
+    </data-source>
+  </component>
+</project>

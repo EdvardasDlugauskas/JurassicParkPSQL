@@ -1,8 +1,11 @@
+-- FOR ENUMS, next to attribute: CHECK( constraint in ('1', '2', '3')
+-- FOR MULTIPLE ATTRIBUTES: CONSTRAINT name CHECK ( condition )
+
 CREATE TABLE Worker
 (
   id INT NOT NULL,
-  Specialty VARCHAR(255) NOT NULL,
-  Surname VARCHAR(255) INT NOT NULL,
+  Specialty VARCHAR(255) NOT NULL, -- TODO: ENUM
+  Surname VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
 );
@@ -11,10 +14,10 @@ CREATE TABLE Enclosure
 (
   id INT NOT NULL,
   EnclosureType VARCHAR(255) NOT NULL,
-  Size DOUBLE NOT NULL,
-  CostNoDiscount DOUBLE NOT NULL,
-  CostWithDiscount DOUBLE NOT NULL,
-  AgeLimit INT NOT NULL,
+  Size DOUBLE PRECISION NOT NULL,
+  CostNoDiscount DOUBLE PRECISION NOT NULL,
+  CostWithDiscount DOUBLE PRECISION NOT NULL,
+  AgeLimit INT NOT NULL, -- TODO: ENUM?
 
   PRIMARY KEY (id)
 );
@@ -23,7 +26,7 @@ CREATE TABLE RegisteredVisitor
 (
   id INT NOT NULL,
   Name VARCHAR(255) NOT NULL,
-  Surname VARCHAR(255) INT NOT NULL,
+  Surname VARCHAR(255) NOT NULL,
   Birthday DATE NOT NULL,
 
   PRIMARY KEY (id)
@@ -32,7 +35,7 @@ CREATE TABLE RegisteredVisitor
 CREATE TABLE Facility
 (
   id INT NOT NULL,
-  FacilityType VARCHAR(255) NOT NULL,
+  FacilityType VARCHAR(255) NOT NULL, -- TODO: ENUM
 
   PRIMARY KEY (id)
 );
@@ -104,4 +107,3 @@ CREATE VIEW VisitorAge
   AS SELECT *, AGE(Birthday) AS Age
   FROM RegisteredVisitor;
 
-CREATE VIEW VisitMoneySpent
