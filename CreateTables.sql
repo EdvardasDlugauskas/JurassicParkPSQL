@@ -1,8 +1,8 @@
 CREATE TABLE Worker
 (
   id INT NOT NULL,
-  Specialty INT NOT NULL,
-  Surname INT NOT NULL,
+  Specialty VARCHAR(255) NOT NULL,
+  Surname VARCHAR(255) INT NOT NULL,
 
   PRIMARY KEY (id)
 );
@@ -10,10 +10,10 @@ CREATE TABLE Worker
 CREATE TABLE Enclosure
 (
   id INT NOT NULL,
-  EnclosureType INT NOT NULL,
-  Size INT NOT NULL,
-  CostNoDiscount INT NOT NULL,
-  CostWithDiscount INT NOT NULL,
+  EnclosureType VARCHAR(255) NOT NULL,
+  Size DOUBLE NOT NULL,
+  CostNoDiscount DOUBLE NOT NULL,
+  CostWithDiscount DOUBLE NOT NULL,
   AgeLimit INT NOT NULL,
 
   PRIMARY KEY (id)
@@ -22,9 +22,9 @@ CREATE TABLE Enclosure
 CREATE TABLE RegisteredVisitor
 (
   id INT NOT NULL,
-  Name INT NOT NULL,
-  Surname INT NOT NULL,
-  Birthday INT NOT NULL,
+  Name VARCHAR(255) NOT NULL,
+  Surname VARCHAR(255) INT NOT NULL,
+  Birthday DATE NOT NULL,
 
   PRIMARY KEY (id)
 );
@@ -32,7 +32,7 @@ CREATE TABLE RegisteredVisitor
 CREATE TABLE Facility
 (
   id INT NOT NULL,
-  FacilityType INT NOT NULL,
+  FacilityType VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
 );
@@ -49,9 +49,9 @@ CREATE TABLE WorkerKeepsCleanEnclosure
 
 CREATE TABLE Dinosaur
 (
-  Name INT NOT NULL,
+  Name VARCHAR(255) NOT NULL,
   id INT NOT NULL,
-  Species INT NOT NULL,
+  Species VARCHAR(255) NOT NULL,
   Enclosure INT NOT NULL,
 
   PRIMARY KEY (id),
@@ -61,8 +61,8 @@ CREATE TABLE Dinosaur
 CREATE TABLE Visit
 (
   id INT NOT NULL,
-  Date INT NOT NULL,
-  TicketType INT NOT NULL,
+  Date DATE NOT NULL,
+  TicketType VARCHAR(255) NOT NULL,
   CitizenId INT NOT NULL,
 
   PRIMARY KEY (id),
@@ -91,7 +91,7 @@ CREATE TABLE VisitBuysTicketEnclosure
 
 CREATE TABLE VisitUsesFacility
 (
-  MoneySpent INT NOT NULL,
+  MoneySpent DOUBLE NOT NULL,
   VisitId INT NOT NULL,
   FacilityId INT NOT NULL,
 
@@ -103,3 +103,5 @@ CREATE TABLE VisitUsesFacility
 CREATE VIEW VisitorAge
   AS SELECT *, AGE(Birthday) AS Age
   FROM RegisteredVisitor;
+
+CREATE VIEW VisitMoneySpent
