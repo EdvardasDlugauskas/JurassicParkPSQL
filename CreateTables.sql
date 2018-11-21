@@ -1,6 +1,11 @@
 -- FOR ENUMS, next to attribute: CHECK( constraint in ('1', '2', '3')
 -- FOR MULTIPLE ATTRIBUTES: CONSTRAINT name CHECK ( condition )
 
+-- GENERATED ALWAYS/BY DEFAULT
+-- AS IDENTITY START WITH ... INCREMENT BY ...
+-- or SERIAL datatype
+
+
 CREATE TABLE Worker
 (
   id INT NOT NULL,
@@ -52,8 +57,8 @@ CREATE TABLE WorkerKeepsCleanEnclosure
 
 CREATE TABLE Dinosaur
 (
-  Name VARCHAR(255) NOT NULL,
   id INT NOT NULL,
+  Name VARCHAR(255) NOT NULL, -- TODO: UNIQUE INDEX (?), "CONSTRAINT attr UNIQUE"
   Species VARCHAR(255) NOT NULL,
   Enclosure INT NOT NULL,
 
@@ -94,7 +99,7 @@ CREATE TABLE VisitBuysTicketEnclosure
 
 CREATE TABLE VisitUsesFacility
 (
-  MoneySpent DOUBLE NOT NULL,
+  MoneySpent DOUBLE PRECISION NOT NULL,
   VisitId INT NOT NULL,
   FacilityId INT NOT NULL,
 
