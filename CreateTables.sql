@@ -1,7 +1,30 @@
+-- TODO: verslo taisykles
+
+-- FOR ENUMS, next to attribute: CHECK( constraint in ('1', '2', '3')
+-- FOR MULTIPLE ATTRIBUTES: CONSTRAINT name CHECK ( condition )
+
+-- GENERATED ALWAYS/BY DEFAULT
+-- AS IDENTITY START WITH ... INCREMENT BY ...
+-- or SERIAL datatype
+
+
+-- FK deletion/update restrictions:
+--  RESTRICT / NO ACTION / CASCADE / SET NULL / SET DEFAULT
+
+-- TRIGGER ideas:
+--  Worker can't look after more than X dinosaurs
+--  Instead of VIEW for MoneySpent
+
+
+
 CREATE TABLE Worker
 (
   id INT NOT NULL,
+<<<<<<< HEAD
   Specialty VARCHAR(255) NOT NULL,
+=======
+  Specialty VARCHAR(255) NOT NULL, -- TODO: ENUM
+>>>>>>> eda33d83bd23c81458908c1a77a6702718e9cb55
   Surname VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
@@ -14,7 +37,11 @@ CREATE TABLE Enclosure
   Size DOUBLE PRECISION NOT NULL,
   CostNoDiscount DOUBLE PRECISION NOT NULL,
   CostWithDiscount DOUBLE PRECISION NOT NULL,
+<<<<<<< HEAD
   AgeLimit INT NOT NULL,
+=======
+  AgeLimit INT NOT NULL, -- TODO: ENUM?
+>>>>>>> eda33d83bd23c81458908c1a77a6702718e9cb55
 
   PRIMARY KEY (id)
 );
@@ -32,7 +59,7 @@ CREATE TABLE RegisteredVisitor
 CREATE TABLE Facility
 (
   id INT NOT NULL,
-  FacilityType VARCHAR(255) NOT NULL,
+  FacilityType VARCHAR(255) NOT NULL, -- TODO: ENUM
 
   PRIMARY KEY (id)
 );
@@ -49,13 +76,13 @@ CREATE TABLE WorkerKeepsCleanEnclosure
 
 CREATE TABLE Dinosaur
 (
-  Name VARCHAR(255) NOT NULL,
   id INT NOT NULL,
+  Name VARCHAR(255) NOT NULL, -- TODO: UNIQUE INDEX (?), "CONSTRAINT attr UNIQUE"
   Species VARCHAR(255) NOT NULL,
   Enclosure INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (Enclosure) REFERENCES Enclosure(id)
+  FOREIGN KEY (Enclosure) REFERENCES Enclosure(id) --TODO: ON DELETE NO ACTION (default, can skip)
 );
 
 CREATE TABLE Visit
@@ -66,7 +93,7 @@ CREATE TABLE Visit
   CitizenId INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (CitizenId) REFERENCES RegisteredVisitor(id)
+  FOREIGN KEY (CitizenId) REFERENCES RegisteredVisitor(id) --TODO: ON DELETE CASCADE
 );
 
 CREATE TABLE WorkerLooksAfterDinosaur
@@ -75,8 +102,8 @@ CREATE TABLE WorkerLooksAfterDinosaur
   DinosaurId INT NOT NULL,
 
   PRIMARY KEY (WorkerId, DinosaurId),
-  FOREIGN KEY (WorkerId) REFERENCES Worker(id),
-  FOREIGN KEY (DinosaurId) REFERENCES Dinosaur(id)
+  FOREIGN KEY (WorkerId) REFERENCES Worker(id), -- TODO: ON DELETE CASCADE
+  FOREIGN KEY (DinosaurId) REFERENCES Dinosaur(id) -- TODO: ON DELETE CASCADE
 );
 
 CREATE TABLE VisitBuysTicketEnclosure
@@ -85,7 +112,7 @@ CREATE TABLE VisitBuysTicketEnclosure
   EnclosureId INT NOT NULL,
 
   PRIMARY KEY (VisitId, EnclosureId),
-  FOREIGN KEY (VisitId) REFERENCES Visit(id),
+  FOREIGN KEY (VisitId) REFERENCES Visit(id), --TODO: ON DELETE CASCADE
   FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id)
 );
 
@@ -103,3 +130,7 @@ CREATE TABLE VisitUsesFacility
 CREATE VIEW VisitorAge
   AS SELECT *, AGE(Birthday) AS Age
   FROM RegisteredVisitor;
+<<<<<<< HEAD
+=======
+
+>>>>>>> eda33d83bd23c81458908c1a77a6702718e9cb55
