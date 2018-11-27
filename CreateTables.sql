@@ -2,7 +2,7 @@ CREATE TABLE Worker
 (
   id INT NOT NULL,
   Specialty VARCHAR(255) NOT NULL,
-  Surname VARCHAR(255) INT NOT NULL,
+  Surname VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
 );
@@ -11,9 +11,9 @@ CREATE TABLE Enclosure
 (
   id INT NOT NULL,
   EnclosureType VARCHAR(255) NOT NULL,
-  Size DOUBLE NOT NULL,
-  CostNoDiscount DOUBLE NOT NULL,
-  CostWithDiscount DOUBLE NOT NULL,
+  Size DOUBLE PRECISION NOT NULL,
+  CostNoDiscount DOUBLE PRECISION NOT NULL,
+  CostWithDiscount DOUBLE PRECISION NOT NULL,
   AgeLimit INT NOT NULL,
 
   PRIMARY KEY (id)
@@ -23,7 +23,7 @@ CREATE TABLE RegisteredVisitor
 (
   id INT NOT NULL,
   Name VARCHAR(255) NOT NULL,
-  Surname VARCHAR(255) INT NOT NULL,
+  Surname VARCHAR(255) NOT NULL,
   Birthday DATE NOT NULL,
 
   PRIMARY KEY (id)
@@ -91,7 +91,7 @@ CREATE TABLE VisitBuysTicketEnclosure
 
 CREATE TABLE VisitUsesFacility
 (
-  MoneySpent DOUBLE NOT NULL,
+  MoneySpent DOUBLE PRECISION NOT NULL,
   VisitId INT NOT NULL,
   FacilityId INT NOT NULL,
 
@@ -103,5 +103,3 @@ CREATE TABLE VisitUsesFacility
 CREATE VIEW VisitorAge
   AS SELECT *, AGE(Birthday) AS Age
   FROM RegisteredVisitor;
-
-CREATE VIEW VisitMoneySpent
