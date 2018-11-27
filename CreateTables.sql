@@ -20,11 +20,7 @@
 CREATE TABLE Worker
 (
   id INT NOT NULL,
-<<<<<<< HEAD
-  Specialty VARCHAR(255) NOT NULL,
-=======
   Specialty VARCHAR(255) NOT NULL, -- TODO: ENUM
->>>>>>> eda33d83bd23c81458908c1a77a6702718e9cb55
   Surname VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
@@ -37,11 +33,7 @@ CREATE TABLE Enclosure
   Size DOUBLE PRECISION NOT NULL,
   CostNoDiscount DOUBLE PRECISION NOT NULL,
   CostWithDiscount DOUBLE PRECISION NOT NULL,
-<<<<<<< HEAD
-  AgeLimit INT NOT NULL,
-=======
   AgeLimit INT NOT NULL, -- TODO: ENUM?
->>>>>>> eda33d83bd23c81458908c1a77a6702718e9cb55
 
   PRIMARY KEY (id)
 );
@@ -130,7 +122,3 @@ CREATE TABLE VisitUsesFacility
 CREATE VIEW VisitorAge
   AS SELECT *, AGE(Birthday) AS Age
   FROM RegisteredVisitor;
-<<<<<<< HEAD
-=======
-
->>>>>>> eda33d83bd23c81458908c1a77a6702718e9cb55
