@@ -1,3 +1,3 @@
-DROP TABLE Visit;
+DROP VIEW Visit;
 
-DROP TABLE RegisteredVisitor;
+DROP VIEW RegisteredVisitor;
