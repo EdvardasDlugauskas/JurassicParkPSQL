@@ -14,6 +14,6 @@ DROP TABLE Enclosure;
 
 DROP TABLE Facility;
 
-DROP TABLE Visit;
+DROP TABLE _Visit;
 
-DROP TABLE RegisteredVisitor;
+DROP TABLE _RegisteredVisitor;
