@@ -13,7 +13,6 @@
 
 -- TRIGGERS:
 -- Don't forget to check not only on INSERT but also on UPDATE!
--- UPDATE activates a trigger if a specific column is updated!
 -- Can be used to create custom Id's before INSERT.
 
 -- JP TRIGGER ideas (GOING TO BE TIME CONSUMING):
