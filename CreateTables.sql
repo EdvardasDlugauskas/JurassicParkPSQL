@@ -86,7 +86,7 @@ CREATE TABLE _Visit
   CitizenId INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (CitizenId) REFERENCES RegisteredVisitor(id) --TODO: ON DELETE CASCADE
+  FOREIGN KEY (CitizenId) REFERENCES _RegisteredVisitor(id) --TODO: ON DELETE CASCADE
 );
 
 CREATE TABLE WorkerLooksAfterDinosaur
@@ -106,7 +106,7 @@ CREATE TABLE VisitBuysTicketEnclosure
   TicketCost DOUBLE PRECISION NOT NULL,
 
   PRIMARY KEY (VisitId, EnclosureId),
-  FOREIGN KEY (VisitId) REFERENCES Visit(id), --TODO: ON DELETE CASCADE
+  FOREIGN KEY (VisitId) REFERENCES _Visit(id), --TODO: ON DELETE CASCADE
   FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id)
 );
 
@@ -117,6 +117,6 @@ CREATE TABLE VisitUsesFacility
   FacilityId INT NOT NULL,
 
   PRIMARY KEY (VisitId, FacilityId),
-  FOREIGN KEY (VisitId) REFERENCES Visit(id),
+  FOREIGN KEY (VisitId) REFERENCES _Visit(id),
   FOREIGN KEY (FacilityId) REFERENCES Facility(id)
 );
