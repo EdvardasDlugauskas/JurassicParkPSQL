@@ -9,12 +9,17 @@
 
 
 -- FK deletion/update restrictions:
---  RESTRICT / NO ACTION / CASCADE / SET NULL / SET DEFAULT
+-- RESTRICT / NO ACTION / CASCADE / SET NULL / SET DEFAULT
 
--- TRIGGER ideas:
---  Worker can't look after more than X dinosaurs
---  Instead of VIEW for MoneySpent
+-- TRIGGERS:
+-- Don't forget to check not only on INSERT but also on UPDATE!
+-- UPDATE activates a trigger if a specific column is updated!
+-- Can be used to create custom Id's before INSERT.
 
+-- JP TRIGGER ideas (GOING TO BE TIME CONSUMING):
+-- Worker can't look after more than X dinosaurs.
+-- No more than X dinosaurs of the same species in an enclosure.
+-- TicketCost in VisitBuysTicketEnlcosure must be caculated with the newest prices from Enclosure.
 
 
 CREATE TABLE Worker
