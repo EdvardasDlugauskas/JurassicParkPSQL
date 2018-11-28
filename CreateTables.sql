@@ -19,7 +19,7 @@
 
 CREATE TABLE Worker
 (
-  id INT NOT NULL,
+  id SERIAL,
   Specialty VARCHAR(255) NOT NULL, -- TODO: ENUM
   Surname VARCHAR(255) NOT NULL,
 
@@ -28,19 +28,20 @@ CREATE TABLE Worker
 
 CREATE TABLE Enclosure
 (
-  id INT NOT NULL,
+  id SERIAL,
   EnclosureType VARCHAR(255) NOT NULL,
   Size DOUBLE PRECISION NOT NULL,
   CostNoDiscount DOUBLE PRECISION NOT NULL,
   CostWithDiscount DOUBLE PRECISION NOT NULL,
   AgeLimit INT NOT NULL, -- TODO: ENUM?
+  DiscountAge INT DEFAULT 0,
 
   PRIMARY KEY (id)
 );
 
-CREATE TABLE RegisteredVisitor
+CREATE TABLE _RegisteredVisitor
 (
-  id INT NOT NULL,
+  id SERIAL,
   Name VARCHAR(255) NOT NULL,
   Surname VARCHAR(255) NOT NULL,
   Birthday DATE NOT NULL,
@@ -50,7 +51,7 @@ CREATE TABLE RegisteredVisitor
 
 CREATE TABLE Facility
 (
-  id INT NOT NULL,
+  id SERIAL,
   FacilityType VARCHAR(255) NOT NULL, -- TODO: ENUM
 
   PRIMARY KEY (id)
@@ -68,7 +69,7 @@ CREATE TABLE WorkerKeepsCleanEnclosure
 
 CREATE TABLE Dinosaur
 (
-  id INT NOT NULL,
+  id SERIAL,
   Name VARCHAR(255) NOT NULL, -- TODO: UNIQUE INDEX (?), "CONSTRAINT attr UNIQUE"
   Species VARCHAR(255) NOT NULL,
   Enclosure INT NOT NULL,
@@ -77,9 +78,9 @@ CREATE TABLE Dinosaur
   FOREIGN KEY (Enclosure) REFERENCES Enclosure(id) --TODO: ON DELETE NO ACTION (default, can skip)
 );
 
-CREATE TABLE Visit
+CREATE TABLE _Visit
 (
-  id INT NOT NULL,
+  id SERIAL,
   Date DATE NOT NULL,
   TicketType VARCHAR(255) NOT NULL,
   CitizenId INT NOT NULL,
@@ -102,6 +103,7 @@ CREATE TABLE VisitBuysTicketEnclosure
 (
   VisitId INT NOT NULL,
   EnclosureId INT NOT NULL,
+  TicketCost DOUBLE PRECISION NOT NULL,
 
   PRIMARY KEY (VisitId, EnclosureId),
   FOREIGN KEY (VisitId) REFERENCES Visit(id), --TODO: ON DELETE CASCADE
