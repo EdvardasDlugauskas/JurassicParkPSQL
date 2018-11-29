@@ -14,6 +14,7 @@
 -- TRIGGERS:
 -- Don't forget to check not only on INSERT but also on UPDATE!
 -- Can be used to create custom Id's before INSERT.
+-- A function for a trigger must RETURN TRIGGER and have 'plpgsql' as its LANGUAGE.
 
 -- JP TRIGGER ideas (GOING TO BE TIME CONSUMING):
 -- Worker can't look after more than X dinosaurs.
