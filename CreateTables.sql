@@ -25,7 +25,7 @@
 CREATE TABLE Worker
 (
   id SERIAL,
-  Specialty VARCHAR(255) NOT NULL, -- TODO: ENUM
+  Specialty VARCHAR(255) NOT NULL, -- TODO: constraint in...
   Surname VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
@@ -38,8 +38,8 @@ CREATE TABLE Enclosure
   Size DOUBLE PRECISION NOT NULL,
   CostNoDiscount DOUBLE PRECISION NOT NULL,
   CostWithDiscount DOUBLE PRECISION NOT NULL,
-  AgeLimit INT NOT NULL, -- TODO: ENUM?
-  DiscountAge INT DEFAULT 0,
+  AgeLimit INT NOT NULL DEFAULT 0, -- TODO: ENUM? (constraint in...)
+  DiscountAge INT NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id)
 );
@@ -57,7 +57,7 @@ CREATE TABLE _RegisteredVisitor
 CREATE TABLE Facility
 (
   id SERIAL,
-  FacilityType VARCHAR(255) NOT NULL, -- TODO: ENUM
+  FacilityType VARCHAR(255) NOT NULL DEFAULT 'General', -- TODO: ENUM (constraint)
 
   PRIMARY KEY (id)
 );
@@ -87,7 +87,7 @@ CREATE TABLE _Visit
 (
   id SERIAL,
   Date DATE NOT NULL,
-  TicketType VARCHAR(255) NOT NULL,
+  TicketType VARCHAR(255) NOT NULL DEFAULT 'Adult',
   CitizenId INT NOT NULL,
 
   PRIMARY KEY (id),
