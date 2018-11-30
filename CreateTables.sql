@@ -25,7 +25,10 @@
 CREATE TABLE Worker
 (
   id SERIAL,
-  Specialty VARCHAR(255) NOT NULL, -- TODO: constraint in...
+  Specialty VARCHAR(255) NOT NULL 
+      CONSTRAINT WorkerSpecialties
+      CHECK(Specialty IN ('Cleaner', 'Veterinarian', 'Feeder', 'Trainer'))
+      DEFAULT 'Cleaner',
   Surname VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
@@ -38,7 +41,10 @@ CREATE TABLE Enclosure
   Size DOUBLE PRECISION NOT NULL,
   CostNoDiscount DOUBLE PRECISION NOT NULL,
   CostWithDiscount DOUBLE PRECISION NOT NULL,
-  AgeLimit INT NOT NULL DEFAULT 0, -- TODO: ENUM? (constraint in...)
+  AgeLimit INT NOT NULL
+      CONSTRAINT AgeLimits
+      CHECK(AgeLimit IN (0, 12, 18, 21))
+      DEFAULT DEFAULT 0,
   DiscountAge INT NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id)
@@ -57,7 +63,10 @@ CREATE TABLE _RegisteredVisitor
 CREATE TABLE Facility
 (
   id SERIAL,
-  FacilityType VARCHAR(255) NOT NULL DEFAULT 'General', -- TODO: ENUM (constraint)
+  FacilityType VARCHAR(255) NOT NULL
+      CONSTRAINT FacilityTypes
+      CHECK(FacilityType IN ('General', 'Restaurant', 'Restroom', 'Shop', 'Hotel'))
+      DEFAULT 'General',
 
   PRIMARY KEY (id)
 );
@@ -75,23 +84,26 @@ CREATE TABLE WorkerKeepsCleanEnclosure
 CREATE TABLE Dinosaur
 (
   id SERIAL,
-  Name VARCHAR(255) NOT NULL, -- TODO: UNIQUE INDEX (?), "CONSTRAINT attr UNIQUE"
+  Name VARCHAR(255) NOT NULL, -- TODO: UNIQUE INDEX
   Species VARCHAR(255) NOT NULL,
   Enclosure INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (Enclosure) REFERENCES Enclosure(id) --TODO: ON DELETE NO ACTION (default, can skip)
+  FOREIGN KEY (Enclosure) REFERENCES Enclosure(id) ON DELETE NO ACTION,
 );
 
 CREATE TABLE _Visit
 (
   id SERIAL,
   Date DATE NOT NULL,
-  TicketType VARCHAR(255) NOT NULL DEFAULT 'Adult',
+  TicketType VARCHAR(255) NOT NULL
+      CONSTRAINT TicketTypes
+      CHECK (TicketType IN ('Child', 'Teen', 'Adult', 'Senior'))
+      DEFAULT 'Adult',
   CitizenId INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (CitizenId) REFERENCES _RegisteredVisitor(id) --TODO: ON DELETE CASCADE
+  FOREIGN KEY (CitizenId) REFERENCES _RegisteredVisitor(id) ON DELETE CASCADE,
 );
 
 CREATE TABLE WorkerLooksAfterDinosaur
@@ -100,8 +112,8 @@ CREATE TABLE WorkerLooksAfterDinosaur
   DinosaurId INT NOT NULL,
 
   PRIMARY KEY (WorkerId, DinosaurId),
-  FOREIGN KEY (WorkerId) REFERENCES Worker(id), -- TODO: ON DELETE CASCADE
-  FOREIGN KEY (DinosaurId) REFERENCES Dinosaur(id) -- TODO: ON DELETE CASCADE
+  FOREIGN KEY (WorkerId) REFERENCES Worker(id) ON DELETE CASCADE,
+  FOREIGN KEY (DinosaurId) REFERENCES Dinosaur(id) ON DELETE CASCADE,
 );
 
 CREATE TABLE VisitBuysTicketEnclosure
@@ -111,7 +123,7 @@ CREATE TABLE VisitBuysTicketEnclosure
   TicketCost DOUBLE PRECISION NOT NULL,
 
   PRIMARY KEY (VisitId, EnclosureId),
-  FOREIGN KEY (VisitId) REFERENCES _Visit(id), --TODO: ON DELETE CASCADE
+  FOREIGN KEY (VisitId) REFERENCES _Visit(id) ON DELETE CASCADE,
   FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id)
 );
 
