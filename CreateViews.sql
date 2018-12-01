@@ -8,7 +8,7 @@ CREATE VIEW DinosaursJonasLooksAfter
   WHERE WorkerId = 1 -- Jonas' ID
   WITH CHECK OPTION; -- galima keist tik Jono santykius su dinozaurais
 
-CREATE VIEW VisitorMoneySpentOnFacilites
+CREATE VIEW VisitorMoneySpentOnFacilities
   AS SELECT VisitId, SUM(MoneySpent) AS MoneySpent
   FROM VisitUsesFacility GROUP BY VisitId;
 
