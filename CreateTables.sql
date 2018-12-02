@@ -37,7 +37,10 @@ CREATE TABLE Worker
 CREATE TABLE Enclosure
 (
   id SERIAL,
-  EnclosureType VARCHAR(255) NOT NULL,
+  EnclosureType VARCHAR(255) NOT NULL
+      CONSTRAINT EnclosureTypes
+      CHECK(EnclosureType IN ('Land', 'Aerial', 'Water'))
+      DEFAULT 'Land',
   Size DOUBLE PRECISION NOT NULL,
   CostNoDiscount DOUBLE PRECISION NOT NULL,
   CostWithDiscount DOUBLE PRECISION NOT NULL,
