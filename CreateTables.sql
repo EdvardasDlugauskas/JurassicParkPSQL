@@ -65,7 +65,7 @@ CREATE TABLE Facility
   id SERIAL,
   FacilityType VARCHAR(255) NOT NULL
       CONSTRAINT FacilityTypes
-      CHECK(FacilityType IN ('General', 'Restaurant', 'Restroom', 'Shop', 'Hotel'))
+      CHECK(FacilityType IN ('General', 'Restaurant', 'Restroom', 'Shop', 'Hotel', 'Observatory'))
       DEFAULT 'General',
 
   PRIMARY KEY (id)
@@ -84,7 +84,7 @@ CREATE TABLE WorkerKeepsCleanEnclosure
 CREATE TABLE Dinosaur
 (
   id SERIAL,
-  Name VARCHAR(255) NOT NULL, -- TODO: UNIQUE INDEX
+  Name VARCHAR(255) NOT NULL,
   Species VARCHAR(255) NOT NULL,
   Enclosure INT NOT NULL,
 
