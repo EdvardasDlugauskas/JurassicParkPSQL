@@ -11,18 +11,18 @@ VALUES
   (9, 'Feeder', 'Cox'),
   (10, 'Feeder', 'Jenkins');
 
-INSERT INTO Enclosure (id, EnclosureType, Size, CostNoDiscount, CostWithDiscount, AgeLimit)
+INSERT INTO Enclosure (id, EnclosureType, Size, CostNoDiscount, CostWithDiscount, AgeLimit, DiscountAge)
 VALUES
-  (1, 'Land', 987.45, 15.5, 8.75, 0),
-  (2, 'Land', 1520.4, 22.0, 13.5, 18),
-  (3, 'Land', 2511.3, 30.0, 16.8, 21),
-  (4, 'Land', 1240.8, 23.2, 14.7, 21),
-  (5, 'Land', 1050.4, 26.6, 15.0, 12),
-  (6, 'Aerial', 1403.7, 28.5, 16.4, 12),
-  (7, 'Aerial', 1508.62, 29.5, 15.5, 12),
-  (8, 'Water', 1020.11, 19.5, 16.3, 0),
-  (9, 'Water', 1256.47, 27.3, 12.2, 21),
-  (10, 'Water', 2200.55, 22.5, 14.8, 18),
+  (1, 'Land', 987.45, 15.5, 8.75, 0, 6),
+  (2, 'Land', 1520.4, 22.0, 13.5, 18, 18),
+  (3, 'Land', 2511.3, 30.0, 16.8, 21, 22),
+  (4, 'Land', 1240.8, 23.2, 14.7, 21, 21),
+  (5, 'Land', 1050.4, 26.6, 15.0, 12, 13),
+  (6, 'Aerial', 1403.7, 28.5, 16.4, 12, 12),
+  (7, 'Aerial', 1508.62, 29.5, 15.5, 12, 12),
+  (8, 'Water', 1020.11, 19.5, 16.3, 0, 5),
+  (9, 'Water', 1256.47, 27.3, 12.2, 21, 24),
+  (10, 'Water', 2200.55, 22.5, 14.8, 18, 24);
 
 INSERT INTO Dinosaur(id, Name, Species, Enclosure)
 VALUES

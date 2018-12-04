@@ -47,7 +47,7 @@ CREATE TABLE Enclosure
   AgeLimit INT NOT NULL
       CONSTRAINT AgeLimits
       CHECK(AgeLimit IN (0, 12, 18, 21))
-      DEFAULT DEFAULT 0,
+      DEFAULT 0,
   DiscountAge INT NOT NULL DEFAULT 0,
 
   PRIMARY KEY (id)
@@ -92,7 +92,7 @@ CREATE TABLE Dinosaur
   Enclosure INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (Enclosure) REFERENCES Enclosure(id) ON DELETE NO ACTION,
+  FOREIGN KEY (Enclosure) REFERENCES Enclosure(id) ON DELETE NO ACTION
 );
 
 CREATE TABLE _Visit
@@ -106,7 +106,7 @@ CREATE TABLE _Visit
   CitizenId INT NOT NULL,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (CitizenId) REFERENCES _RegisteredVisitor(id) ON DELETE CASCADE,
+  FOREIGN KEY (CitizenId) REFERENCES _RegisteredVisitor(id) ON DELETE CASCADE
 );
 
 CREATE TABLE WorkerLooksAfterDinosaur
@@ -116,7 +116,7 @@ CREATE TABLE WorkerLooksAfterDinosaur
 
   PRIMARY KEY (WorkerId, DinosaurId),
   FOREIGN KEY (WorkerId) REFERENCES Worker(id) ON DELETE CASCADE,
-  FOREIGN KEY (DinosaurId) REFERENCES Dinosaur(id) ON DELETE CASCADE,
+  FOREIGN KEY (DinosaurId) REFERENCES Dinosaur(id) ON DELETE CASCADE
 );
 
 CREATE TABLE VisitBuysTicketEnclosure
