@@ -94,7 +94,7 @@ VALUES
   ('2018-12-03', 'Child', 9),
   ('2018-12-03', 'Adult', 7),
   ('2018-12-05', 'Adult', 8),
-  ('2018-12-05', 'Senior', 1),
+  ('2018-12-06', 'Senior', 1),
   ('2018-12-05', 'Adult', 4);
 
 INSERT INTO VisitBuysTicketEnclosure(VisitId, EnclosureId, TicketCost)
