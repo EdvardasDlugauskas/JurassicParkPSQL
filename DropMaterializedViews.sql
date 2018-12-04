@@ -1,0 +1,3 @@
+DROP MATERIALIZED VIEW FacilityReport;
+
+DROP MATERIALIZED VIEW DinosaurSpecies;
