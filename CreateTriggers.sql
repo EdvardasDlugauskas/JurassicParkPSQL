@@ -9,7 +9,7 @@ BEGIN
        WHERE Enclosure = NEW.Enclosure
          AND Species = NEW.Species
        GROUP BY Enclosure, Species)
-  SELECT SUM(NumOfSameSpec) INTO speciesCount FROM DinoEncSpec;
+  SELECT NumOfSameSpec INTO speciesCount FROM DinoEncSpec;
 
   IF speciesCount >= 5 THEN
     RAISE EXCEPTION 'There can not be more than five dinosaurs of the same species in one enclosure.';
@@ -44,14 +44,15 @@ CREATE OR REPLACE FUNCTION check_up_to_date_ticket_cost()
   RETURNS TRIGGER AS
 $$
 DECLARE
-  tempTicketCost DOUBLE PRECISION;
+  tempTicketCost SMALLINT;
 BEGIN
-  WITH TicketCostsEnclosure(Id, TicketCost) AS
-      (SELECT VBT.EnclosureId, VBT.TicketCost FROM VisitBuysTicketEnclosure AS VBT, Enclosure AS E
-       WHERE VBT.EnclosureId = NEW.EnclosureId
+  WITH TicketCostsEnclosure(rowCount) AS
+      (SELECT COUNT(*) FROM VisitBuysTicketEnclosure AS VBT, Enclosure AS E
+       WHERE VBT.VisitId = NEW.VisitId
+         AND VBT.EnclosureId = NEW.EnclosureId
          AND VBT.EnclosureId = E.Id
          AND (VBT.TicketCost = E.CostNoDiscount OR VBT.TicketCost = E.CostWithDiscount))
-  SELECT COALESCE(SUM(TicketCost), 0) INTO tempTicketCost FROM TicketCostsEnclosure;
+  SELECT rowCount INTO tempTicketCost FROM TicketCostsEnclosure;
 
   IF tempTicketCost = 0 THEN
     RAISE EXCEPTION 'The table''s "VisitBuysTicketEnclosure" TicketCost column value must be from the Enclosure table.';
