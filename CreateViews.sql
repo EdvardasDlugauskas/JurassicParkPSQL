@@ -16,7 +16,6 @@ CREATE VIEW VisitorMoneySpentOnTickets
   AS SELECT VisitId, SUM(TicketCost) as TicketTotal
   FROM VisitBuysTicketEnclosure GROUP BY VisitId;
 
-
 CREATE VIEW Visit
   AS SELECT _Visit.*,
        COALESCE(VisitorMoneySpentOnFacilities.MoneySpent, 0) +

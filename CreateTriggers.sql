@@ -27,12 +27,30 @@ BEGIN
   WITH WorkerDinoNum(id, dinoCount) AS
       (SELECT WorkerId, COUNT(*)
        FROM WorkerLooksAfterDinosaur
-       WHERE WorkerId = 5
+       WHERE WorkerId = NEW.WorkerId
        GROUP BY WorkerId)
   SELECT dinoCount INTO lookAfterDinoCount FROM WorkerDinoNum;
 
   IF lookAfterDinoCount >= 3 THEN
   RAISE EXCEPTION 'A worker can not look after more than three dinosaurs.';
+  END IF;
+  RETURN NEW;
+END; $$
+LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION check_up_to_date_ticket_cost()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  PERFORM (WITH TicketCostsEnclosure(Id, TicketCost) AS
+  (SELECT VBT.EnclosureId, VBT.TicketCost FROM VisitBuysTicketEnclosure AS VBT, Enclosure AS E
+    WHERE VBT.EnclosureId = NEW.EnclosureId
+    AND VBT.EnclosureId = E.Id
+    AND (VBT.TicketCost = E.CostNoDiscount OR VBT.TicketCost = E.CostWithDiscount))
+  SELECT TicketCost FROM TicketCostsEnclosure);
+  IF NOT FOUND THEN
+  RAISE EXCEPTION 'The table''s "VisitBuysTicketEnclosure" TicketCost column value must be from the Enclosure table.';
   END IF;
   RETURN NEW;
 END; $$
@@ -48,3 +66,8 @@ CREATE TRIGGER WorkerLookAfterDino
 BEFORE INSERT OR UPDATE ON WorkerLooksAfterDinosaur
 FOR EACH ROW
 EXECUTE PROCEDURE check_worker_look_after_num();
+
+CREATE TRIGGER UpToDateTicketCost
+BEFORE INSERT OR UPDATE ON VisitBuysTicketEnclosure
+FOR EACH ROW
+EXECUTE PROCEDURE check_up_to_date_ticket_cost();
