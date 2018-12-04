@@ -48,10 +48,8 @@ DECLARE
 BEGIN
   WITH TicketCostsEnclosure(rowCount) AS
       (SELECT COUNT(*) FROM VisitBuysTicketEnclosure AS VBT, Enclosure AS E
-       WHERE VBT.VisitId = NEW.VisitId
-         AND VBT.EnclosureId = NEW.EnclosureId
-         AND VBT.EnclosureId = E.Id
-         AND (VBT.TicketCost = E.CostNoDiscount OR VBT.TicketCost = E.CostWithDiscount))
+       WHERE NEW.EnclosureId = E.Id
+         AND (NEW.TicketCost = E.CostNoDiscount OR NEW.TicketCost = E.CostWithDiscount))
   SELECT rowCount INTO tempTicketCost FROM TicketCostsEnclosure;
 
   IF tempTicketCost = 0 THEN
