@@ -1,12 +1,12 @@
 CREATE VIEW RegisteredVisitor
-  AS SELECT *, AGE(Birthday) AS Age, Name + ' ' + Surname AS Fullname
+  AS SELECT *, AGE(Birthday) AS Age, CONCAT(Name, ' ', Surname) AS Fullname
   FROM _RegisteredVisitor;
 
 CREATE VIEW DinosaursJonasLooksAfter
   AS SELECT *
   FROM WorkerLooksAfterDinosaur
   WHERE WorkerId = 1 -- Jonas' ID
-  WITH CHECK OPTION; -- galima keist tik Jono santykius su dinozaurais
+  WITH CHECK OPTION;
 
 CREATE VIEW VisitorMoneySpentOnFacilities
   AS SELECT VisitId, SUM(MoneySpent) AS MoneySpent
@@ -17,18 +17,11 @@ CREATE VIEW VisitorMoneySpentOnTickets
   FROM VisitBuysTicketEnclosure GROUP BY VisitId;
 
 
--- TODO check if this view works correctly
 CREATE VIEW Visit
   AS SELECT _Visit.*,
-       VisitorMoneySpentOnFacilities.MoneySpent + VisitorMoneySpentOnTickets.TicketTotal AS MoneySpent
-  FROM _Visit
-  INNER JOIN VisitorMoneySpentOnFacilities ON _Visit.id = VisitorMoneySpentOnFacilities.VisitId
-  INNER JOIN VisitorMoneySpentOnTickets ON _Visit.id = VisitorMoneySpentOnTickets.VisitId;
+       COALESCE(VisitorMoneySpentOnFacilities.MoneySpent, 0) +
+       COALESCE(VisitorMoneySpentOnTickets.TicketTotal, 0) AS MoneySpent
+     FROM _Visit
+       LEFT OUTER JOIN VisitorMoneySpentOnFacilities ON _Visit.id = VisitorMoneySpentOnFacilities.VisitId
+       LEFT OUTER JOIN VisitorMoneySpentOnTickets ON _Visit.id = VisitorMoneySpentOnTickets.VisitId;
 
--- CREATE VIEW Visit
---   AS SELECT _Visit.*, visitFacility.spent +  visitEnclosure.spent as MoneySpent
---   FROM _Visit
---        INNER JOIN (SELECT VisitId, SUM(MoneySpent) as spent FROM VisitUsesFacility GROUP BY VisitId)
---           visitFacility on _Visit.id = visitFacility.VisitId
---        INNER JOIN (SELECT VisitId, SUM(TicketCost) as spent FROM VisitBuysTicketEnclosure GROUP BY VisitId)
---           visitEnclosure on _Visit.id = visitEnclosure.VisitId;
