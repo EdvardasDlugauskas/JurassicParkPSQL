@@ -22,7 +22,7 @@ CREATE VIEW Visit
   AS SELECT _Visit.*,
        VisitorMoneySpentOnFacilites.MoneySpent + VisitorMoneySpentOnTickets.TicketTotal AS MoneySpent
   FROM _Visit
-  INNER JOIN VisitorMoneySpentOnFacilites ON _Visit.id = VisitorMoneySpentOnFacilites.VisitId
+  INNER JOIN VisitorMoneySpentOnFacilities ON _Visit.id = VisitorMoneySpentOnFacilities.VisitId
   INNER JOIN VisitorMoneySpentOnTickets ON _Visit.id = VisitorMoneySpentOnTickets.VisitId;
 
 -- CREATE VIEW Visit
