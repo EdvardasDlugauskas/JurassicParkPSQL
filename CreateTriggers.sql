@@ -1,10 +1,13 @@
 CREATE OR REPLACE FUNCTION check_dino_species_num()
 	RETURNS TRIGGER AS
+DECLARE
+	speciesCount := smallint;
 $$
 BEGIN
-IF (SELECT NumOfSameSpecies FROM (SELECT Enclosure, Species, COUNT(*) AS NumOfSameSpecies FROM Dinosaur
+SELECT NumOfSameSpecies INTO speciesCount FROM (SELECT Enclosure, Species, COUNT(*) AS NumOfSameSpecies FROM Dinosaur
         WHERE Enclosure = NEW.Enclosure
-        GROUP BY Enclosure, Species) AS temp) >= 5
+        GROUP BY Enclosure, Species) AS temp)
+IF speciesCount >= 5
 THEN
 	RAISE EXCEPTION 'There can not be more than five dinosaurs of the same species in one enclosure.';
 END IF;
