@@ -128,8 +128,7 @@ CREATE VIEW DinosaursLewisLooksAfter
   AS SELECT Dinosaur.*
      FROM WorkerLooksAfterDinosaur
        INNER JOIN dinosaur ON WorkerLooksAfterDinosaur.dinosaurid = dinosaur.id
-     WHERE WorkerId = 5 -- Lewis' ID
-  WITH CHECK OPTION;
+     WHERE WorkerId = 5; -- Lewis' ID
 
 CREATE VIEW VisitorMoneySpentOnFacilities
   AS SELECT VisitId, SUM(MoneySpent) AS MoneySpent
