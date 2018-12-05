@@ -103,7 +103,7 @@ VALUES
   (1, 1, 8.75),
   (5, 3, 30.0);
 
-INSERT INTO VisitUsesFacility(MoneySpent, VisitId, FacilityId)
+INSERT INTO VisitUsesFacility(VisitId, FacilityId, MoneySpent)
 VALUES
   (35.4, 3, 2),
   (0.5, 3, 3),

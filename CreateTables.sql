@@ -132,9 +132,9 @@ CREATE TABLE VisitBuysTicketEnclosure
 
 CREATE TABLE VisitUsesFacility
 (
-  MoneySpent DOUBLE PRECISION NOT NULL,
   VisitId INT NOT NULL,
   FacilityId INT NOT NULL,
+  MoneySpent DOUBLE PRECISION NOT NULL,
 
   PRIMARY KEY (VisitId, FacilityId),
   FOREIGN KEY (VisitId) REFERENCES _Visit(id),
