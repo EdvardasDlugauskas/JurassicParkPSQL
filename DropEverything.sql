@@ -4,7 +4,7 @@ DROP VIEW DinosaursJonasLooksAfter;
 
 DROP VIEW Visit;
 
-DROP VIEW VisitorMoneySpentOnFacilites;
+DROP VIEW VisitorMoneySpentOnFacilities;
 
 DROP VIEW VisitorMoneySpentOnTickets;
 
