@@ -42,7 +42,7 @@ DROP TABLE WorkerLooksAfterDinosaur;
 
 DROP TABLE VisitBuysTicketEnclosure;
 
-DROP TABLE VisitUsesFacility;
+DROP TABLE VisitUsesFacility CASCADE;
 
 DROP TABLE Worker;
 
