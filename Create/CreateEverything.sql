@@ -125,8 +125,9 @@ CREATE VIEW RegisteredVisitor
      FROM _RegisteredVisitor;
 
 CREATE VIEW DinosaursLewisLooksAfter
-  AS SELECT *
+  AS SELECT Dinosaur.*
      FROM WorkerLooksAfterDinosaur
+       INNER JOIN dinosaur ON WorkerLooksAfterDinosaur.dinosaurid = dinosaur.id
      WHERE WorkerId = 5 -- Lewis' ID
   WITH CHECK OPTION;
 
