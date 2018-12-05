@@ -37,7 +37,10 @@ VALUES
   ('Benjamin', 'Velociraptor', 4),
   ('Kyle', 'Ankylosaurus', 4),
   ('Jason', 'Mososaurus', 9),
-  ('Sam', 'Mososaurus', 10);
+  ('Sam', 'Mososaurus', 10),
+  ('Loo', 'Velociraptor', 2),
+  ('Koo', 'Velociraptor', 2),
+  ('Puo', 'Velociraptor', 2);
 
 INSERT INTO Facility(FacilityType)
 VALUES
