@@ -124,10 +124,10 @@ CREATE VIEW RegisteredVisitor
   AS SELECT *, AGE(Birthday) AS Age, CONCAT(Name, ' ', Surname) AS Fullname
      FROM _RegisteredVisitor;
 
-CREATE VIEW DinosaursJonasLooksAfter
+CREATE VIEW DinosaursLewisLooksAfter
   AS SELECT *
      FROM WorkerLooksAfterDinosaur
-     WHERE WorkerId = 1 -- Jonas' ID
+     WHERE WorkerId = 5 -- Lewis' ID
   WITH CHECK OPTION;
 
 CREATE VIEW VisitorMoneySpentOnFacilities

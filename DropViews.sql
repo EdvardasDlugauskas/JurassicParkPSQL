@@ -1,6 +1,6 @@
 DROP VIEW RegisteredVisitor;
 
-DROP VIEW DinosaursJonasLooksAfter;
+DROP VIEW DinosaursLewisLooksAfter;
 
 DROP VIEW Visit;
 
