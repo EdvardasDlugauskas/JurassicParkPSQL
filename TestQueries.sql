@@ -17,6 +17,10 @@ VALUES ('bad type!', 1000, 15, 8, 0, 6);
 INSERT INTO Facility(FacilityType)
 VALUES ('bad type!');
 
+-- TicketType constraint
+INSERT INTO _Visit(Date, TicketType, CitizenId)
+VALUES('2018-12-06', 'NotTicket', 2);
+
 -- TRIGGER CONSTRAINTS --
 
 -- Dinosaur trigger constraint
