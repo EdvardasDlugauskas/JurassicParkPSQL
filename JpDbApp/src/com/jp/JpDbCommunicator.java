@@ -19,31 +19,31 @@ public class JpDbCommunicator {
     public PreparedStatement getSelectAllFromTableQuery(String tableName){
         var query = "SELECT * FROM " + tableName;
 
-        return prepareSqlStatement(new Object[]{}, query);
+        return prepareSqlStatement(query);
     }
 
     public PreparedStatement getSelectDinoByEnclosureQuery(int enclosureId){
         var query = "SELECT * FROM Dinosaur WHERE Enclosure = ?";
 
-        return prepareSqlStatement(new Object[]{enclosureId}, query);
+        return prepareSqlStatement(query, enclosureId);
     }
 
     public PreparedStatement getSelectDinoByNameQuery(String dinoName){
         var query = "SELECT * FROM Dinosaur where Name = ?";
 
-        return prepareSqlStatement(new Object[]{dinoName}, query);
+        return prepareSqlStatement(query, dinoName);
     }
 
     public PreparedStatement getSelectWorkerBySpecialty(String specialty){
         var query = "SELECT * FROM Worker where Specialty = ?";
 
-        return prepareSqlStatement(new Object[]{specialty}, query);
+        return prepareSqlStatement(query, specialty);
     }
 
     public PreparedStatement getSelectWorkerBySpecialtySurnameQuery(String specialty, String workerSurname){
         var query = "SELECT * FROM Worker where Specialty = ? AND Surname = ?";
 
-        return prepareSqlStatement(new Object[]{specialty, workerSurname}, query);
+        return prepareSqlStatement(query, specialty, workerSurname);
     }
 
     /**
@@ -129,7 +129,7 @@ public class JpDbCommunicator {
         return psqlCon;
     }
 
-    private PreparedStatement prepareSqlStatement(Object[] values, String query) {
+    private PreparedStatement prepareSqlStatement(String query, Object... values) {
         PreparedStatement prepStatement;
 
         try {
