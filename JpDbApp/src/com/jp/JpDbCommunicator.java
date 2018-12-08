@@ -1,5 +1,8 @@
 package com.jp;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+
 import java.util.LinkedList;
 import java.sql.*;
 
@@ -7,12 +10,35 @@ public class JpDbCommunicator {
 
     private Connection jpDbCon;
 
-    private static final String DB_URL = "jdbc:postgresql://pgsql3.mif:5432/studentu";
-    private static final String USER_NAME = "your_username";
-    private static final String USER_PASS = "your_password";
+    // "jdbc:postgresql://pgsql3.mif:5432/studentu";
+    private static final String DB_URL = "jdbc:postgresql://localhost:1234/studentu";
+    private static final String USER_NAME = username;
+    private static final String USER_PASS = password;
 
-    JpDbCommunicator(){
+    JpDbCommunicator() throws JSchException {
+        // SSH connection code taken from:
+        // https://www.journaldev.com/235/java-mysql-ssh-jsch-jdbc
+        var lport = 1234;
+        var rport = 5432;
+        var host = "uosis.mif.vu.lt";
+        var rhost = "pgsql3.mif";
+
+        //Set StrictHostKeyChecking property to no to avoid UnknownHostKey issue
+        java.util.Properties config = new java.util.Properties();
+        config.put("StrictHostKeyChecking", "no");
+        var jsch = new JSch();
+        var session = jsch.getSession(USER_NAME, host, 22);
+        session.setPassword(USER_PASS);
+        session.setConfig(config);
+        session.connect();
+        System.out.println("Connected!");
+
+        int assinged_port = session.setPortForwardingL(lport, rhost, rport);
+        System.out.println("localhost:" + assinged_port + " -> " + rhost + ":" + rport);
+        System.out.println("Port Forwarded");
+
         loadDbDriver();
+        System.out.println("Connecting to database...");
         jpDbCon = connectToDb();
     }
 
@@ -125,6 +151,7 @@ public class JpDbCommunicator {
 
         try {
             psqlCon = DriverManager.getConnection(DB_URL, USER_NAME, USER_PASS);
+            System.out.println("Connected to PSQL database successfully.");
         }
         catch (SQLException e) {
             e.printStackTrace();
