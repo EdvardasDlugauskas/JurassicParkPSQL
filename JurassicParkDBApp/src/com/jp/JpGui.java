@@ -11,7 +11,7 @@ public class JpGui {
         var results = dbCommunicator.executeSqlQuery(allDinos);
         for (LinkedList<String> row : results){
             for (String data : row){
-                System.out.print("data");
+                System.out.print(data + "\t | \t");
             }
             System.out.println("");
         }
