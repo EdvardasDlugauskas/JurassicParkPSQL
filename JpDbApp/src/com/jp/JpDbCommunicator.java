@@ -119,6 +119,7 @@ public class JpDbCommunicator {
             try {
                 jpDbCon.rollback();
             } catch (SQLException e1) {
+                //How do you not lose the first SQLException here?
                 throw new RollbackFailedException("The program was unable to rollback changes.", e1);
             }
 
