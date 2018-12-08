@@ -54,26 +54,35 @@ public class JpDbCommunicator {
      * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
      * @param sqlQuery A PreparedStatement that will be executed.
      * @return A QueryExecutionResult object.
-     * Note: If updateCount is -1 then a SELECT query was executed, otherwise updateCount represents
+     * Note1: If updateCount is -1 then a SELECT query was executed, otherwise updateCount represents
      * the number of rows affected by INSERT, UPDATE or DELETE.
+     * Note2: If a SELECT query was executed then the queried table's column names will be saved in the
+     * QueryExecutionResult object's columnNames field.
      */
     public QueryExecutionResult executeSqlStatement(PreparedStatement sqlQuery){
         var execResult = new QueryExecutionResult();
         try {
             if (sqlQuery.execute()) {
                 var queryReader = sqlQuery.getResultSet();
+                var queryMetaData = queryReader.getMetaData();
+                var columnCount = queryMetaData.getColumnCount();
 
-                while(queryReader.next()){
+                execResult.updateCount = -1;
+
+                for (int i = 1; i <= columnCount; i++){
+                    execResult.columnNames.add(queryMetaData.getColumnName(i));
+                }
+
+                while(queryReader.next()) {
                     var resultRow = new LinkedList<String>();
 
-                    for (int i = 1; i <= queryReader.getMetaData().getColumnCount(); i++ ) {
+                    for (int i = 1; i <= columnCount; i++) {
                         resultRow.add(queryReader.getString(i));
                     }
 
                     execResult.resultList.add(resultRow);
                 }
 
-                execResult.updateCount = -1;
                 queryReader.close();
             }
             else{

@@ -8,8 +8,11 @@ public class JpGui {
         System.out.println("Connecting to database...");
         var dbCommunicator = new JpDbCommunicator();
         var dinos = dbCommunicator.getSelectDinoByEnclosureQuery(2);
-        var results = dbCommunicator.executeSqlStatement(dinos).resultList;
-        for (LinkedList<String> row : results){
+        var results = dbCommunicator.executeSqlStatement(dinos);
+        for (String column : results.columnNames){
+            System.out.print(column + "\t | \t");
+        }
+        for (LinkedList<String> row : results.resultList){
             for (String data : row){
                 System.out.print(data + "\t | \t");
             }
