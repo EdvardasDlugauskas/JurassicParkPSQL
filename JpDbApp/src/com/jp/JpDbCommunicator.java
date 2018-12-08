@@ -23,27 +23,33 @@ public class JpDbCommunicator {
     }
 
     public PreparedStatement getSelectDinoByEnclosureQuery(int enclosureId){
-        var query = "SELECT * FROM Dinosaur WHERE Enclosure = ?";
+        var query = "SELECT * FROM Dinosaur WHERE enclosure = ?";
 
         return prepareSqlStatement(query, enclosureId);
     }
 
     public PreparedStatement getSelectDinoByNameQuery(String dinoName){
-        var query = "SELECT * FROM Dinosaur where Name = ?";
+        var query = "SELECT * FROM Dinosaur WHERE name = ?";
 
         return prepareSqlStatement(query, dinoName);
     }
 
-    public PreparedStatement getSelectWorkerBySpecialty(String specialty){
-        var query = "SELECT * FROM Worker where Specialty = ?";
+    public PreparedStatement getSelectWorkerBySpecialtyQuery(String specialty){
+        var query = "SELECT * FROM Worker WHERE specialty = ?";
 
         return prepareSqlStatement(query, specialty);
     }
 
     public PreparedStatement getSelectWorkerBySpecialtySurnameQuery(String specialty, String workerSurname){
-        var query = "SELECT * FROM Worker where Specialty = ? AND Surname = ?";
+        var query = "SELECT * FROM Worker WHERE specialty = ? AND surname = ?";
 
         return prepareSqlStatement(query, specialty, workerSurname);
+    }
+
+    public PreparedStatement getSelectMonetSpentByVisitorQuery(int visitorId){
+        var query = "SELECT moneyspent FROM Visit WHERE citizenid = ?";
+
+        return prepareSqlStatement(query, visitorId);
     }
 
     /**
@@ -139,6 +145,9 @@ public class JpDbCommunicator {
             for (Object value : values){
                 if (value instanceof Integer){
                     prepStatement.setInt(parameterIndex, (Integer) value);
+                }
+                else if (value instanceof Double){
+                    prepStatement.setDouble(parameterIndex, (Double) value);
                 }
                 else if (value instanceof String){
                     prepStatement.setString(parameterIndex, (String) value);
