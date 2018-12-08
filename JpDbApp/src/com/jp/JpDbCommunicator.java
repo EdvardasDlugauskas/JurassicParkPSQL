@@ -31,7 +31,7 @@ public class JpDbCommunicator {
         session.setPassword(USER_PASS);
         session.setConfig(config);
         session.connect();
-        System.out.println("Connected!");
+        System.out.println("Connected to SSH");
 
         int assinged_port = session.setPortForwardingL(lport, rhost, rport);
         System.out.println("localhost:" + assinged_port + " -> " + rhost + ":" + rport);
