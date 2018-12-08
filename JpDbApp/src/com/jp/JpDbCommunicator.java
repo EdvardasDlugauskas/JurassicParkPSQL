@@ -1,6 +1,5 @@
 package com.jp;
 
-import javax.management.Query;
 import java.util.LinkedList;
 import java.sql.*;
 
@@ -18,36 +17,33 @@ public class JpDbCommunicator {
     }
 
     public PreparedStatement getSelectAllFromTableQuery(String tableName){
-        PreparedStatement prepStatement;
         var query = "SELECT * FROM " + tableName;
 
-        try {
-            prepStatement = jpDbCon.prepareStatement(query);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            return null;
-        }
-
-        return prepStatement;
+        return prepareSqlStatement(new Object[]{}, query);
     }
 
     public PreparedStatement getSelectDinoByEnclosureQuery(int enclosureId){
-        PreparedStatement prepStatement;
         var query = "SELECT * FROM Dinosaur WHERE Enclosure = ?";
 
-        try {
-            prepStatement = jpDbCon.prepareStatement(query);
-            prepStatement.setInt(1, enclosureId);
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return prepareSqlStatement(new Object[]{enclosureId}, query);
+    }
 
-        return prepStatement;
+    public PreparedStatement getSelectDinoByNameQuery(String dinoName){
+        var query = "SELECT * FROM Dinosaur where Name = ?";
+
+        return prepareSqlStatement(new Object[]{dinoName}, query);
+    }
+
+    public PreparedStatement getSelectWorkerBySpecialty(String specialty){
+        var query = "SELECT * FROM Worker where Specialty = ?";
+
+        return prepareSqlStatement(new Object[]{specialty}, query);
+    }
+
+    public PreparedStatement getSelectWorkerBySpecialtySurnameQuery(String specialty, String workerSurname){
+        var query = "SELECT * FROM Worker where Specialty = ? AND Surname = ?";
+
+        return prepareSqlStatement(new Object[]{specialty, workerSurname}, query);
     }
 
     /**
@@ -56,7 +52,7 @@ public class JpDbCommunicator {
      * @return A QueryExecutionResult object.
      * Note1: If updateCount is -1 then a SELECT query was executed, otherwise updateCount represents
      * the number of rows affected by INSERT, UPDATE or DELETE.
-     * Note2: If a SELECT query was executed then the queried table's column names will be saved in the
+     * Note2: If a SELECT query was executed then the queried columns' names will be saved in the
      * QueryExecutionResult object's columnNames field.
      */
     public QueryExecutionResult executeSqlStatement(PreparedStatement sqlQuery){
@@ -131,6 +127,32 @@ public class JpDbCommunicator {
         }
 
         return psqlCon;
+    }
+
+    private PreparedStatement prepareSqlStatement(Object[] values, String query) {
+        PreparedStatement prepStatement;
+
+        try {
+            prepStatement = jpDbCon.prepareStatement(query);
+            var parameterIndex = 1;
+
+            for (Object value : values){
+                if (value instanceof Integer){
+                    prepStatement.setInt(parameterIndex, (Integer) value);
+                }
+                else if (value instanceof String){
+                    prepStatement.setString(parameterIndex, (String) value);
+                }
+                parameterIndex++;
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+        return prepStatement;
     }
 }
 
