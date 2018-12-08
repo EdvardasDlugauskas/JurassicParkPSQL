@@ -12,8 +12,8 @@ public class JpDbCommunicator {
 
     // "jdbc:postgresql://pgsql3.mif:5432/studentu";
     private static final String DB_URL = "jdbc:postgresql://localhost:1234/studentu";
-    private static final String USER_NAME = "maja4388";
-    private static final String USER_PASS = "5Adfjkl254";
+    private static final String USER_NAME = "";
+    private static final String USER_PASS = "";
 
     JpDbCommunicator() throws JSchException {
         // SSH connection code taken from:
