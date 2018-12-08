@@ -29,6 +29,8 @@ public class JpGui {
             for (String column : queryResults.columnNames){
                 System.out.print(column + "\t | \t");
             }
+            System.out.println();
+
             for (LinkedList<String> row : queryResults.resultList){
                 for (String data : row){
                     System.out.print(data + "\t | \t");
