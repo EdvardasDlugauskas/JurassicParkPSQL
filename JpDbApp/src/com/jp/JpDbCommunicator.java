@@ -12,8 +12,8 @@ public class JpDbCommunicator {
 
     // "jdbc:postgresql://pgsql3.mif:5432/studentu";
     private static final String DB_URL = "jdbc:postgresql://localhost:1234/studentu";
-    private static final String USER_NAME = username;
-    private static final String USER_PASS = password;
+    private static final String USER_NAME = "maja4388";
+    private static final String USER_PASS = "5Adfjkl254";
 
     JpDbCommunicator() throws JSchException {
         // SSH connection code taken from:
@@ -42,22 +42,41 @@ public class JpDbCommunicator {
         jpDbCon = connectToDb();
     }
 
+    //region SELECT Statements
     public PreparedStatement getSelectAllFromTableQuery(String tableName){
         var query = "SELECT * FROM " + tableName;
 
         return prepareSqlStatement(query);
     }
 
-    public PreparedStatement getSelectDinoByEnclosureQuery(int enclosureId){
-        var query = "SELECT * FROM Dinosaur WHERE enclosure = ?";
+    public PreparedStatement getSelectEnclosureByTypeQuery(String enclosureType){
+        var query = "SELECT * FROM Enclosure WHERE enclosuretype = ?";
 
-        return prepareSqlStatement(query, enclosureId);
+        return prepareSqlStatement(query, enclosureType);
+    }
+
+    public PreparedStatement getSelectEnclosureByDinoSpeciesQuery(String dinoSpecies){
+        var query =
+                "WITH SpeciesInEnclosure(enclosureId, species) AS " +
+                        "(SELECT enclosure, species FROM Dinosaur " +
+                        "WHERE species = ? " +
+                        "GROUP BY enclosure, species) " +
+                        "SELECT id, enclosuretype, size, costnodiscount, costwithdiscount, agelimit, discountage " +
+                        "FROM Enclosure, SpeciesInEnclosure AS SpcEn WHERE id = SpcEn.enclosureId";
+
+        return prepareSqlStatement(query, dinoSpecies);
     }
 
     public PreparedStatement getSelectDinoByNameQuery(String dinoName){
         var query = "SELECT * FROM Dinosaur WHERE name = ?";
 
         return prepareSqlStatement(query, dinoName);
+    }
+
+    public PreparedStatement getSelectDinoByEnclosureQuery(int enclosureId){
+        var query = "SELECT * FROM Dinosaur WHERE enclosure = ?";
+
+        return prepareSqlStatement(query, enclosureId);
     }
 
     public PreparedStatement getSelectWorkerBySpecialtyQuery(String specialty){
@@ -77,53 +96,61 @@ public class JpDbCommunicator {
 
         return prepareSqlStatement(query, visitorId);
     }
+    //endregion
 
     /**
      * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
      * @param sqlQuery A PreparedStatement that will be executed.
-     * @return A QueryExecutionResult object.
+     * @return A SqlStatementExecutionResult object.
      * Note1: If updateCount is -1 then a SELECT query was executed, otherwise updateCount represents
      * the number of rows affected by INSERT, UPDATE or DELETE.
      * Note2: If a SELECT query was executed then the queried columns' names will be saved in the
-     * QueryExecutionResult object's columnNames field.
+     * SqlStatementExecutionResult object's columnNames field.
      */
-    public QueryExecutionResult executeSqlStatement(PreparedStatement sqlQuery){
-        var execResult = new QueryExecutionResult();
-        try {
+    public SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlQuery)
+            throws SqlExecFailedException, RollbackFailedException {
+        var execResult = new SqlStatementExecutionResult();
+
+        try (sqlQuery){
             if (sqlQuery.execute()) {
-                var queryReader = sqlQuery.getResultSet();
-                var queryMetaData = queryReader.getMetaData();
-                var columnCount = queryMetaData.getColumnCount();
+                try (var queryReader = sqlQuery.getResultSet()){
+                    var queryMetaData = queryReader.getMetaData();
+                    var columnCount = queryMetaData.getColumnCount();
 
-                execResult.updateCount = -1;
+                    execResult.updateCount = -1;
 
-                for (int i = 1; i <= columnCount; i++){
-                    execResult.columnNames.add(queryMetaData.getColumnName(i));
-                }
-
-                while(queryReader.next()) {
-                    var resultRow = new LinkedList<String>();
-
-                    for (int i = 1; i <= columnCount; i++) {
-                        resultRow.add(queryReader.getString(i));
+                    for (int i = 1; i <= columnCount; i++){
+                        execResult.columnNames.add(queryMetaData.getColumnName(i));
                     }
 
-                    execResult.resultList.add(resultRow);
-                }
+                    while(queryReader.next()) {
+                        var resultRow = new LinkedList<String>();
 
-                queryReader.close();
+                        for (int i = 1; i <= columnCount; i++) {
+                            resultRow.add(queryReader.getString(i));
+                        }
+
+                        execResult.resultList.add(resultRow);
+                    }
+                }
             }
             else{
                 execResult.updateCount = sqlQuery.getUpdateCount();
             }
+
+            jpDbCon.commit();
+            return execResult;
         }
         catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            return null;
-        }
+            try {
+                jpDbCon.rollback();
+            } catch (SQLException e1) {
+                //How do you not lose the first SQLException here?
+                throw new RollbackFailedException("The program was unable to rollback changes.", e1);
+            }
 
-        return execResult;
+            throw new SqlExecFailedException("Sql statement execution failed.", e);
+        }
     }
 
     public void closeConnection(){
@@ -151,7 +178,7 @@ public class JpDbCommunicator {
 
         try {
             psqlCon = DriverManager.getConnection(DB_URL, USER_NAME, USER_PASS);
-            System.out.println("Connected to PSQL database successfully.");
+            psqlCon.setAutoCommit(false);
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -191,4 +218,3 @@ public class JpDbCommunicator {
         return prepStatement;
     }
 }
-
