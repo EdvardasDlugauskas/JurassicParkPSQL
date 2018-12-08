@@ -1,5 +1,6 @@
 package com.jp;
 
+import javax.management.Query;
 import java.util.LinkedList;
 import java.sql.*;
 
@@ -7,7 +8,7 @@ public class JpDbCommunicator {
 
     private Connection jpDbCon;
 
-    private static final String DB_URL = "jdbc:postgresql://pgsql3.mif/studentu";
+    private static final String DB_URL = "jdbc:postgresql://pgsql3.mif:5432/studentu";
     private static final String USER_NAME = "your_username";
     private static final String USER_PASS = "your_password";
 
@@ -16,14 +17,12 @@ public class JpDbCommunicator {
         jpDbCon = connectToDb();
     }
 
-
-    public PreparedStatement getSelectDinoByEnclosureQuery(int enclosure){
+    public PreparedStatement getSelectAllFromTableQuery(String tableName){
         PreparedStatement prepStatement;
-        var query = "SELECT * FROM Dinosaur WHERE Enclosure = ?";
+        var query = "SELECT * FROM " + tableName;
 
         try {
             prepStatement = jpDbCon.prepareStatement(query);
-            prepStatement.setInt(1, enclosure);
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -34,19 +33,51 @@ public class JpDbCommunicator {
         return prepStatement;
     }
 
-    public LinkedList<LinkedList<String>> executeSqlQuery(PreparedStatement sqlQuery){
-        var results = new LinkedList<LinkedList<String>>();
+    public PreparedStatement getSelectDinoByEnclosureQuery(int enclosureId){
+        PreparedStatement prepStatement;
+        var query = "SELECT * FROM Dinosaur WHERE Enclosure = ?";
+
         try {
-            var queryReader = sqlQuery.executeQuery();
+            prepStatement = jpDbCon.prepareStatement(query);
+            prepStatement.setInt(1, enclosureId);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return null;
+        }
 
-            while(queryReader.next()){
-                var resultRow = new LinkedList<String>();
+        return prepStatement;
+    }
 
-                for (int i = 1; i <= queryReader.getMetaData().getColumnCount(); i++ ) {
-                    resultRow.add(queryReader.getString(i));
+    /**
+     * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
+     * @param sqlQuery A PreparedStatement that will be executed.
+     * @return A QueryExecutionResult object.
+     * Note: If updateCount is -1 then a SELECT query was executed, otherwise updateCount represents
+     * the number of rows affected by INSERT, UPDATE or DELETE.
+     */
+    public QueryExecutionResult executeSqlStatement(PreparedStatement sqlQuery){
+        var execResult = new QueryExecutionResult();
+        try {
+            if (sqlQuery.execute()) {
+                var queryReader = sqlQuery.getResultSet();
+
+                while(queryReader.next()){
+                    var resultRow = new LinkedList<String>();
+
+                    for (int i = 1; i <= queryReader.getMetaData().getColumnCount(); i++ ) {
+                        resultRow.add(queryReader.getString(i));
+                    }
+
+                    execResult.resultList.add(resultRow);
                 }
 
-                results.add(resultRow);
+                execResult.updateCount = -1;
+                queryReader.close();
+            }
+            else{
+                execResult.updateCount = sqlQuery.getUpdateCount();
             }
         }
         catch (SQLException e) {
@@ -55,7 +86,7 @@ public class JpDbCommunicator {
             return null;
         }
 
-        return results;
+        return execResult;
     }
 
     public void closeConnection(){
