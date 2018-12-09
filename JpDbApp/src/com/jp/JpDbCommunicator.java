@@ -66,7 +66,7 @@ public class JpDbCommunicator {
         return prepareSqlStatement(query, dinoSpecies);
     }
 
-    public PreparedStatement getSelectEnclosureByVisitorQuery(int visitorId){
+    public PreparedStatement getSelectEnclosureByVisitorIdQuery(int visitorId){
         var query =
                 "SELECT E.* FROM Enclosure AS E, VisitBuysTicketEnclosure AS VBT, _Visit AS V " +
                 "WHERE E.id = VBT.enclosureid " +
