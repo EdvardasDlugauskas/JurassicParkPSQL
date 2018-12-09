@@ -1,9 +1,7 @@
 package com.jp;
 
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
-import java.sql.PreparedStatement;
 import java.util.LinkedList;
 
 public class JpGui {

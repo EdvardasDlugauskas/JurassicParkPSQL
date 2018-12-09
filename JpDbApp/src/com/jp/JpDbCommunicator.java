@@ -97,6 +97,73 @@ public class JpDbCommunicator {
     }
     //endregion
 
+    //region INSERT statements
+    public PreparedStatement getInsertNewEnclosureStatement(String enclosureType, double size, double costNoDiscount,
+                                                            double costWithDiscount, int ageLimit, int discountAge){
+        var insertStatement = "INSERT INTO Enclosure(enclosuretype, size, costnodiscount, costwithdiscount, " +
+                "agelimit, discountage) VALUES(?, ?, ?, ?, ?, ?)";
+
+        return prepareSqlStatement(insertStatement, enclosureType, size, costNoDiscount, costWithDiscount,
+                ageLimit, discountAge);
+    }
+
+    public PreparedStatement getInsertNewDinoStatement(String dinoName, String dinoSpecies, int enclosureId){
+        var insertStatement = "INSERT INTO Dinosaur(name, species, enclosure) " +
+                "VALUES(?, ?, ?)";
+
+        return prepareSqlStatement(insertStatement, dinoName, dinoSpecies, enclosureId);
+    }
+
+    public PreparedStatement getInsertNewWorkerStatement(String workerSpecialty, String workerSurname){
+        var insertStatement = "INSERT INTO Worker(specialty, surname) " +
+                "VALUES(?, ?)";
+
+        return prepareSqlStatement(insertStatement, workerSpecialty, workerSurname);
+    }
+
+    public PreparedStatement getInsertNewWorkerCaringForDinoStatement(int workerId, int dinoId){
+        var insertStatement = "INSERT INTO WorkerLooksAfterdinosaur(workerid, dinosaurid) " +
+                "VALUES(?, ?)";
+
+        return prepareSqlStatement(insertStatement, workerId, dinoId);
+    }
+
+    public PreparedStatement getInsertNewWorkerCleanEnclosureStatement(int workerId, int enclosureId){
+        var insertStatement = "INSERT INTO WorkerKeepsCleanEnclosure(workerid, enclosureid) " +
+                "VALUES(?, ?)";
+
+        return prepareSqlStatement(insertStatement, workerId, enclosureId);
+    }
+
+    public PreparedStatement getInsertNewVisitorStatement(String visitorName, String visitorSurname, Date visitorBirthday){
+        var insertStatement = "INSERT INTO _RegisteredVisitor(name, surname, birthday) " +
+                "VALUES(?, ?, ?)";
+
+        return prepareSqlStatement(insertStatement, visitorName, visitorSurname, visitorBirthday);
+    }
+
+    public PreparedStatement getInsertNewVisitStatement(Date visitDate, String visitTicketType, int visitorId){
+        var insertStatement = "INSER INTO _Visit(date, tickettype, citizenid) " +
+                "VALUES(?, ?, ?)";
+
+        return prepareSqlStatement(insertStatement, visitDate, visitTicketType, visitorId);
+    }
+
+    public PreparedStatement getInsertNewTicketToEnclosureStatement(int visitId, int enclosureId, double ticketCost){
+        var insertStatement = "INSERT INTO VisitBuysTicketEnclosure(visitid, enclosureid, ticketcost) " +
+                "VALUES(?, ?, ?)";
+
+        return prepareSqlStatement(insertStatement, visitId, enclosureId, ticketCost);
+    }
+
+    public PreparedStatement getInsertNewFacilityStatement(String facilityType){
+        var insertStatement = "INSERT INTO Facility(facilitytype) " +
+                "VALUES(?)";
+
+        return prepareSqlStatement(insertStatement, facilityType);
+    }
+    //endregion
+
     /**
      * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
      * When an exception occurs in sql statement execution, this method rolls back the statement changes.
@@ -238,6 +305,9 @@ public class JpDbCommunicator {
                 }
                 else if (value instanceof Double){
                     prepStatement.setDouble(parameterIndex, (Double) value);
+                }
+                else if (value instanceof Date){
+                    prepStatement.setDate(parameterIndex, (Date) value);
                 }
                 else if (value instanceof String){
                     prepStatement.setString(parameterIndex, (String) value);
