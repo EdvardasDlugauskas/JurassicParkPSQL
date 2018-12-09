@@ -174,6 +174,67 @@ public class JpDbCommunicator {
     }
     //endregion
 
+    //region UPDATE statements
+    public PreparedStatement getUpdateEnclosureByIdStatement(int enclosureId, String newEncType, double newEncSize, double newEncCostNDisc,
+                                                             double newEncCostWDisc, int newEncAgeLimit, int newEncDiscAge){
+        var updateStatement = "UPDATE Enclosure Set enclosuretype = ?, size = ?, costnodiscount = ?, costwithdiscount = ?, " +
+                "agelimit = ?, discountage = ? WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newEncType, newEncSize, newEncCostNDisc, newEncCostWDisc,
+                newEncAgeLimit, newEncDiscAge, enclosureId);
+    }
+
+    public PreparedStatement getUpdateDinoByIdStatement(int dinoId, String newDinoName, String newDinoSpecies, int newDinoEnclosureId){
+        var updateStatement = "UPDATE Dinosaur SET name = ?, species = ?, enclosure = ? " +
+                "WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newDinoName, newDinoSpecies, newDinoEnclosureId, dinoId);
+    }
+
+    public PreparedStatement getUpdateWorkerByIdStatement(int workerId, String newWorkerSpecialty, String newWorkerSurname){
+        var updateStatement = "UPDATE Worker SET specialty = ?, surname = ? " +
+                "WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newWorkerSpecialty, newWorkerSurname, workerId);
+    }
+
+    public PreparedStatement getUpdateWorkerCaringForDinoByIdsStatement(int workerId, int oldDinoId, int newDinoId){
+        var updateStatement = "UPDATE WorkerLooksAfterDinosaur SET dinosaurid = ? " +
+                "WHERE workerid = ? AND dinosaurid = ?";
+
+        return prepareSqlStatement(updateStatement, newDinoId, workerId, oldDinoId);
+    }
+
+    public PreparedStatement getUpdateWorkerCleaningEncByIdsStatement(int workerId, int oldEnclosureId, int newEnclosureId){
+        var updateStatement = "UPDATE WorkerKeepsCleanEnclosure SET enclosureid = ? " +
+                "WHERE workerid = ? AND enclosureid = ?";
+
+        return prepareSqlStatement(updateStatement, newEnclosureId, workerId, oldEnclosureId);
+    }
+
+    public PreparedStatement getUpdateVisitorByIdStatement(int visitorId, String newVisitorName, String newVisitorSurname,
+                                                           Date newVisitorBirthday){
+        var updateStatement = "UPDATE _RegisteredVisitor SET name = ?, surname = ?, birthday = ? " +
+                "WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newVisitorName, newVisitorSurname, newVisitorBirthday, visitorId);
+    }
+
+    public PreparedStatement getUpdateVisitBuysTicketEncByIdStatement(int visitId, int oldEncId, int newEncId, double newTicketCost){
+        var updateStatement = "UPDATE VisitBuysTicketEnclosure SET enclosureid = ?, ticketcost = ? " +
+                "WHERE visitid = ? AND enclosureid = ?";
+
+        return prepareSqlStatement(updateStatement, newEncId, newTicketCost, visitId, oldEncId);
+    }
+
+    public PreparedStatement getUpdateVisitUsesFacilityByIdsStatement(int visitId, int oldFacilityId, int newFacilityId, double newMoneySpent){
+        var updateStatement = "UPDATE VisitUsesFacility SET facilityid = ?, moneyspent = ? " +
+                "WHERE visitid = ? AND facilityid = ?";
+
+        return prepareSqlStatement(updateStatement, newFacilityId, newMoneySpent, visitId, oldFacilityId);
+    }
+    //endregion
+
     /**
      * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
      * When an exception occurs in sql statement execution, this method rolls back the statement changes.
