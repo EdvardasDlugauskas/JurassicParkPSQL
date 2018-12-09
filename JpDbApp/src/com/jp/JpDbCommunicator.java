@@ -3,8 +3,11 @@ package com.jp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.LinkedList;
-import java.sql.*;
 
 public class JpDbCommunicator {
 
@@ -15,6 +18,13 @@ public class JpDbCommunicator {
     private static final String USER_PASS = password;
 
     JpDbCommunicator() throws JSchException {
+        connectToSsh();
+        loadDbDriver();
+        System.out.println("Connecting to database...");
+        jpDbCon = connectToDb();
+    }
+
+    private void connectToSsh() throws JSchException {
         // SSH connection code taken from:
         // https://www.journaldev.com/235/java-mysql-ssh-jsch-jdbc
         var lport = 1234;
@@ -35,10 +45,6 @@ public class JpDbCommunicator {
         int assinged_port = session.setPortForwardingL(lport, rhost, rport);
         System.out.println("localhost:" + assinged_port + " -> " + rhost + ":" + rport);
         System.out.println("Port Forwarded");
-
-        loadDbDriver();
-        System.out.println("Connecting to database...");
-        jpDbCon = connectToDb();
     }
 
     //region SELECT Statements

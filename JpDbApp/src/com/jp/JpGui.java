@@ -1,17 +1,20 @@
 package com.jp;
 
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
 import java.util.LinkedList;
 
 public class JpGui {
+    public static JpDbCommunicator dbCommunicator;
+
     public void initializeGui() throws JSchException {
         LinkedList<SqlStatementExecutionResult> queryResults = null;
 
         System.out.println("Welcome!");
         System.out.println("Connecting to database...");
 
-        var dbCommunicator = new JpDbCommunicator();
+        dbCommunicator = new JpDbCommunicator();
 
         var enclosureQuery = dbCommunicator.getSelectEnclosureByDinoSpeciesQuery("Velociraptor");
         var dinoQuery = dbCommunicator.getSelectAllFromTableQuery("Dinosaur");
@@ -21,11 +24,7 @@ public class JpGui {
         try {
             queryResults = dbCommunicator.executeSqlStatements(enclosureQuery, dinoQuery, workerQuery, enclosureByVisitorQuery);
         }
-        catch (SqlExecFailedException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-        catch (RollbackFailedException e) {
+        catch (SqlExecFailedException | RollbackFailedException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
@@ -45,7 +44,8 @@ public class JpGui {
             System.out.println("----------------------");
         }
 
-        dbCommunicator.closeConnection();
+        // Don't close since it's still needed for the actual GUI
+        //dbCommunicator.closeConnection();
     }
 }
 
