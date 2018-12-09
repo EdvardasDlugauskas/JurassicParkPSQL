@@ -62,7 +62,7 @@ public class JpDbCommunicator {
                         "GROUP BY enclosure, species) " +
                         "SELECT id, enclosuretype, size, costnodiscount, costwithdiscount, agelimit, discountage " +
                         "FROM Enclosure, SpeciesInEnclosure AS SpcEn WHERE id = SpcEn.enclosureId";
-
+      
         return prepareSqlStatement(query, dinoSpecies);
     }
 
@@ -210,6 +210,7 @@ public class JpDbCommunicator {
             if (commitChanges){
                 commitChangesToDb();
             }
+
             return execResult;
         }
         catch (SQLException e) {
