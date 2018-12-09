@@ -10,7 +10,6 @@ public class JpDbCommunicator {
 
     private Connection jpDbCon;
 
-    // "jdbc:postgresql://pgsql3.mif:5432/studentu";
     private static final String DB_URL = "jdbc:postgresql://localhost:1234/studentu";
     private static final String USER_NAME = username;
     private static final String USER_PASS = password;
@@ -100,20 +99,23 @@ public class JpDbCommunicator {
 
     /**
      * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
-     * @param sqlQuery A PreparedStatement that will be executed.
+     * When an exception occurs in sql statement execution, this method rolls back the statement changes.
+     * @param sqlStatement A PreparedStatement that will be executed.
+     * @param commitChanges A boolean value that allows to specify whether you want the changes to be
+     * committed to the database or not.
      * @return A SqlStatementExecutionResult object.
      * Note1: If updateCount is -1 then a SELECT query was executed, otherwise updateCount represents
      * the number of rows affected by INSERT, UPDATE or DELETE.
      * Note2: If a SELECT query was executed then the queried columns' names will be saved in the
      * SqlStatementExecutionResult object's columnNames field.
      */
-    public SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlQuery)
+    public SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlStatement, boolean commitChanges)
             throws SqlExecFailedException, RollbackFailedException {
         var execResult = new SqlStatementExecutionResult();
 
-        try (sqlQuery){
-            if (sqlQuery.execute()) {
-                try (var queryReader = sqlQuery.getResultSet()){
+        try (sqlStatement){
+            if (sqlStatement.execute()) {
+                try (var queryReader = sqlStatement.getResultSet()){
                     var queryMetaData = queryReader.getMetaData();
                     var columnCount = queryMetaData.getColumnCount();
 
@@ -135,21 +137,55 @@ public class JpDbCommunicator {
                 }
             }
             else{
-                execResult.updateCount = sqlQuery.getUpdateCount();
+                execResult.updateCount = sqlStatement.getUpdateCount();
             }
 
-            jpDbCon.commit();
+            if (commitChanges){
+                commitChangesToDb();
+            }
             return execResult;
         }
         catch (SQLException e) {
-            try {
-                jpDbCon.rollback();
-            } catch (SQLException e1) {
-                //How do you not lose the first SQLException here?
-                throw new RollbackFailedException("The program was unable to rollback changes.", e1);
-            }
+            rollbackNotCommittedChanges();
 
             throw new SqlExecFailedException("Sql statement execution failed.", e);
+        }
+    }
+
+    /**
+     * This method executes multiple Sql statements of any kind, be it SELECT, INSERT, UPDATE or DELETE.
+     * Unlike executeSqlStatement, this method commits changes to the database after it executes
+     * all of the Sql statements without any exceptions occurring.
+     * @param sqlStatements multiple PreparedStatements that will be executed.
+     * @return A LinkedList of SqlStatementExecutionResult objects.
+     * Note1: If a SqlStatementExecutionResult's updateCount is -1 then a SELECT query
+     * was executed, otherwise updateCount represents
+     * the number of rows affected by INSERT, UPDATE or DELETE.
+     * Note2: If a SELECT query was executed then the queried columns' names will be saved in the
+     * SqlStatementExecutionResult object's columnNames field.
+     */
+    public LinkedList<SqlStatementExecutionResult> executeSqlStatements(PreparedStatement... sqlStatements)
+            throws SqlExecFailedException, RollbackFailedException {
+        var execResults = new LinkedList<SqlStatementExecutionResult>();
+
+        for (PreparedStatement sqlStatement : sqlStatements) {
+            var execResult = executeSqlStatement(sqlStatement, false);
+            execResults.add(execResult);
+        }
+
+        commitChangesToDb();
+        return execResults;
+    }
+
+    public void rollbackNotCommittedChanges()
+            throws RollbackFailedException{
+        try {
+            jpDbCon.rollback();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            throw new RollbackFailedException("The program was unable to rollback changes.", e);
         }
     }
 
@@ -216,5 +252,15 @@ public class JpDbCommunicator {
         }
 
         return prepStatement;
+    }
+
+    private void commitChangesToDb(){
+        try {
+            jpDbCon.commit();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -3,20 +3,24 @@ package com.jp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
+import java.sql.PreparedStatement;
 import java.util.LinkedList;
 
 public class JpGui {
     public void initializeGui() throws JSchException {
-        SqlStatementExecutionResult queryResults = null;
+        LinkedList<SqlStatementExecutionResult> queryResults = null;
 
         System.out.println("Welcome!");
         System.out.println("Connecting to database...");
 
         var dbCommunicator = new JpDbCommunicator();
-        var dinoQuery = dbCommunicator.getSelectEnclosureByDinoSpeciesQuery("Velociraptor");
+
+        var enclosureQuery = dbCommunicator.getSelectEnclosureByDinoSpeciesQuery("Velociraptor");
+        var dinoQuery = dbCommunicator.getSelectAllFromTableQuery("Dinosaur");
+        var workerQuery = dbCommunicator.getSelectWorkerBySpecialtyQuery("Cleaner");
 
         try {
-            queryResults = dbCommunicator.executeSqlStatement(dinoQuery);
+            queryResults = dbCommunicator.executeSqlStatements(enclosureQuery, dinoQuery, workerQuery);
         }
         catch (SqlExecFailedException e) {
             e.printStackTrace();
@@ -27,19 +31,19 @@ public class JpGui {
             System.out.println(e.getMessage());
         }
 
-        if (queryResults != null){
-
-            for (String column : queryResults.columnNames){
+        for (SqlStatementExecutionResult result : queryResults){
+            for (String column : result.columnNames){
                 System.out.print(column + "\t | \t");
             }
             System.out.println();
 
-            for (LinkedList<String> row : queryResults.resultList){
+            for (LinkedList<String> row : result.resultList){
                 for (String data : row){
                     System.out.print(data + "\t | \t");
                 }
                 System.out.println();
             }
+            System.out.println("----------------------");
         }
 
         dbCommunicator.closeConnection();
