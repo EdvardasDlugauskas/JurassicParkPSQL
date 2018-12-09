@@ -16,9 +16,10 @@ public class JpGui {
         var enclosureQuery = dbCommunicator.getSelectEnclosureByDinoSpeciesQuery("Velociraptor");
         var dinoQuery = dbCommunicator.getSelectAllFromTableQuery("Dinosaur");
         var workerQuery = dbCommunicator.getSelectWorkerBySpecialtyQuery("Cleaner");
+        var enclosureByVisitorQuery = dbCommunicator.getSelectEnclosureByVisitorQuery(9);
 
         try {
-            queryResults = dbCommunicator.executeSqlStatements(enclosureQuery, dinoQuery, workerQuery);
+            queryResults = dbCommunicator.executeSqlStatements(enclosureQuery, dinoQuery, workerQuery, enclosureByVisitorQuery);
         }
         catch (SqlExecFailedException e) {
             e.printStackTrace();

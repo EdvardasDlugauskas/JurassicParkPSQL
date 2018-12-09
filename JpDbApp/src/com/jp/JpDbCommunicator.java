@@ -60,10 +60,20 @@ public class JpDbCommunicator {
                         "(SELECT enclosure, species FROM Dinosaur " +
                         "WHERE species = ? " +
                         "GROUP BY enclosure, species) " +
-                        "SELECT id, enclosuretype, size, costnodiscount, costwithdiscount, agelimit, discountage " +
-                        "FROM Enclosure, SpeciesInEnclosure AS SpcEn WHERE id = SpcEn.enclosureId";
+                        "SELECT E.* " +
+                        "FROM Enclosure AS E, SpeciesInEnclosure AS SpcEn WHERE id = SpcEn.enclosureId";
       
         return prepareSqlStatement(query, dinoSpecies);
+    }
+
+    public PreparedStatement getSelectEnclosureByVisitorQuery(int visitorId){
+        var query =
+                "SELECT E.* FROM Enclosure AS E, VisitBuysTicketEnclosure AS VBT, _Visit AS V " +
+                "WHERE E.id = VBT.enclosureid " +
+                "AND VBT.visitid = V.id " +
+                "AND V.citizenid = ?";
+
+        return prepareSqlStatement(query, visitorId);
     }
 
     public PreparedStatement getSelectDinoByNameQuery(String dinoName){
