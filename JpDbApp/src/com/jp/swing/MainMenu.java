@@ -22,7 +22,7 @@ public class MainMenu {
                 var query = Main.app.dbCommunicator.getSelectDinoByEnclosureQuery(2);
                 SqlStatementExecutionResult result = null;
                 try {
-                    result = Main.app.dbCommunicator.executeSqlStatement(query);
+                    result = Main.app.dbCommunicator.executeSqlStatement(query, true);
                 } catch (SqlExecFailedException | RollbackFailedException e1) {
                     e1.printStackTrace();
                 }
