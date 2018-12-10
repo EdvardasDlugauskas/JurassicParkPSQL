@@ -45,6 +45,12 @@ public class JpDbCommunicator {
     }
 
     //region SELECT Statements
+    public SqlStatementExecutionResult executeSelectAllFromTableQuery(String tableName) {
+        var statement = getSelectAllFromTableQuery(tableName);
+        var result = executeSqlStatement(statement);
+        return result;
+    }
+
     public PreparedStatement getSelectAllFromTableQuery(String tableName){
         var query = "SELECT * FROM " + tableName;
 
@@ -57,6 +63,12 @@ public class JpDbCommunicator {
         return prepareSqlStatement(query, enclosureType);
     }
 
+    public SqlStatementExecutionResult executeSelectEnclosureByDinoSpecies(String dinoSpecies) {
+        var statement = getSelectEnclosureByDinoSpeciesQuery(dinoSpecies);
+        var result = executeSqlStatement(statement);
+        return result;
+    }
+
     public PreparedStatement getSelectEnclosureByDinoSpeciesQuery(String dinoSpecies){
         var query =
                 "WITH SpeciesInEnclosure(enclosureId, species) AS " +
@@ -67,6 +79,14 @@ public class JpDbCommunicator {
                         "FROM Enclosure AS E, SpeciesInEnclosure AS SpcEn WHERE id = SpcEn.enclosureId";
       
         return prepareSqlStatement(query, dinoSpecies);
+    }
+
+
+    public SqlStatementExecutionResult executeSelectEnclosureByVisitorId(int visitorId)
+    {
+        var statement = getSelectEnclosureByVisitorIdQuery(visitorId);
+        var result = executeSqlStatement(statement);
+        return result;
     }
 
     public PreparedStatement getSelectEnclosureByVisitorIdQuery(int visitorId){
@@ -237,6 +257,16 @@ public class JpDbCommunicator {
         return prepareSqlStatement(updateStatement, newFacilityId, newMoneySpent, visitId, oldFacilityId);
     }
     //endregion
+
+    private SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlStatement)
+    {
+        try {
+            return executeSqlStatement(sqlStatement, true);
+        } catch (SqlExecFailedException | RollbackFailedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * This method executes any Sql statement, be it SELECT, INSERT, UPDATE or DELETE.
