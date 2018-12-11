@@ -20,30 +20,23 @@ public class JpGui {
         var workerQuery = dbCommunicator.getSelectWorkerBySpecialtyQuery("Cleaner");
         var enclosureByVisitorQuery = dbCommunicator.getSelectEnclosureByVisitorIdQuery(9);
 
-        try {
-            queryResults = dbCommunicator.executeSqlStatements(enclosureQuery, dinoQuery, workerQuery, enclosureByVisitorQuery);
-        }
-        catch (SqlExecFailedException | RollbackFailedException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+        //queryResults = dbCommunicator.executeInsertNewDinoAndCaringWorkerStatement("Johnnyey", "Dogosaurus", 3, 6);
 
-        for (SqlStatementExecutionResult result : queryResults){
-            for (String column : result.columnNames){
-                System.out.print(column + "\t | \t");
-            }
-            System.out.println();
+//        for (SqlStatementExecutionResult result : queryResults){
+//            for (String column : result.columnNames){
+//                System.out.print(column + "\t | \t");
+//            }
+//            System.out.println();
+//
+//            for (LinkedList<String> row : result.resultList){
+//                for (String data : row){
+//                    System.out.print(data + "\t | \t");
+//                }
+//                System.out.println();
+//            }
+//            System.out.println("----------------------");
+//        }
 
-            for (LinkedList<String> row : result.resultList){
-                for (String data : row){
-                    System.out.print(data + "\t | \t");
-                }
-                System.out.println();
-            }
-            System.out.println("----------------------");
-        }
-
-        // Don't close since it's still needed for the actual GUI
         //dbCommunicator.closeConnection();
     }
 }
