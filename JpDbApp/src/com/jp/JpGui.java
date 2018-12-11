@@ -5,13 +5,15 @@ import com.jcraft.jsch.JSchException;
 import java.util.LinkedList;
 
 public class JpGui {
+    public static JpDbCommunicator dbCommunicator;
+
     public void initializeGui() throws JSchException {
         LinkedList<SqlStatementExecutionResult> queryResults = null;
 
         System.out.println("Welcome!");
         System.out.println("Connecting to database...");
 
-        var dbCommunicator = new JpDbCommunicator();
+        dbCommunicator = new JpDbCommunicator();
 
         var enclosureQuery = dbCommunicator.getSelectEnclosureByDinoSpeciesQuery("Velociraptor");
         var dinoQuery = dbCommunicator.getSelectAllFromTableQuery("Dinosaur");

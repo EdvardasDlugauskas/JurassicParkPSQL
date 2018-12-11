@@ -3,8 +3,8 @@ package com.jp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 
-import java.util.LinkedList;
 import java.sql.*;
+import java.util.LinkedList;
 
 public class JpDbCommunicator {
 
@@ -15,6 +15,13 @@ public class JpDbCommunicator {
     private static final String USER_PASS = password;
 
     JpDbCommunicator() throws JSchException {
+        connectToSsh();
+        loadDbDriver();
+        System.out.println("Connecting to database...");
+        jpDbCon = connectToDb();
+    }
+
+    private void connectToSsh() throws JSchException {
         // SSH connection code taken from:
         // https://www.journaldev.com/235/java-mysql-ssh-jsch-jdbc
         var lport = 1234;
@@ -35,20 +42,34 @@ public class JpDbCommunicator {
         int assinged_port = session.setPortForwardingL(lport, rhost, rport);
         System.out.println("localhost:" + assinged_port + " -> " + rhost + ":" + rport);
         System.out.println("Port Forwarded");
-
-        loadDbDriver();
-        System.out.println("Connecting to database...");
-        jpDbCon = connectToDb();
     }
 
     //region Implemented Statements
-    public PreparedStatement getSelectAllFromTableQuery(String tableName) {
+    public SqlStatementExecutionResult executeSelectAllFromTableQuery(String tableName) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getSelectAllFromTableQuery(tableName);
+        var result = executeSqlStatement(statement);
+        return result;
+    }
+
+    public PreparedStatement getSelectAllFromTableQuery(String tableName){
         var query = "SELECT * FROM " + tableName;
 
         return prepareSqlStatement(query);
     }
 
-    public PreparedStatement getSelectEnclosureByDinoSpeciesQuery(String dinoSpecies) {
+    public PreparedStatement getSelectEnclosureByTypeQuery(String enclosureType){
+        var query = "SELECT * FROM Enclosure WHERE enclosuretype = ?";
+
+        return prepareSqlStatement(query, enclosureType);
+    }
+
+    public SqlStatementExecutionResult executeSelectEnclosureByDinoSpecies(String dinoSpecies) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getSelectEnclosureByDinoSpeciesQuery(dinoSpecies);
+        var result = executeSqlStatement(statement);
+        return result;
+    }
+
+    public PreparedStatement getSelectEnclosureByDinoSpeciesQuery(String dinoSpecies){
         var query =
                 "WITH SpeciesInEnclosure(enclosureId, species) AS " +
                         "(SELECT enclosure, species FROM Dinosaur " +
@@ -60,7 +81,13 @@ public class JpDbCommunicator {
         return prepareSqlStatement(query, dinoSpecies);
     }
 
-    public PreparedStatement getSelectEnclosureByVisitorIdQuery(int visitorId) {
+    public SqlStatementExecutionResult executeSelectEnclosureByVisitorId(int visitorId) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getSelectEnclosureByVisitorIdQuery(visitorId);
+        var result = executeSqlStatement(statement);
+        return result;
+    }
+
+    public PreparedStatement getSelectEnclosureByVisitorIdQuery(int visitorId){
         var query =
                 "SELECT E.* FROM Enclosure AS E, VisitBuysTicketEnclosure AS VBT, _Visit AS V " +
                         "WHERE E.id = VBT.enclosureid " +
@@ -90,17 +117,13 @@ public class JpDbCommunicator {
         int index = 0;
 
         var insertDino = getInsertNewDinoStatement(dinoName, dinoSpecies, enclosureId);
-
         var insertDinoRes = executeSqlStatementNoCommit(insertDino);
-
         var getDinoId = getSelectDinoByNameQuery(dinoName);
-
         var getDinoIdRes = executeSqlStatementNoCommit(getDinoId);
 
         dinoId = Integer.parseInt(getDinoIdRes.resultList.get(0).get(0));
 
         var insertCaringWorker = getInsertNewWorkerCaringForDinoStatement(workerId, dinoId);
-
         return executeSqlStatementsAndHandelExcep(insertCaringWorker);
     }
     //endregion
@@ -136,7 +159,7 @@ public class JpDbCommunicator {
         return prepareSqlStatement(query, specialty, workerSurname);
     }
 
-    public PreparedStatement getSelectMonetSpentByVisitorQuery(int visitorId) {
+    public PreparedStatement getSelectMoneySpentByVisitorQuery(int visitorId){
         var query = "SELECT moneyspent FROM Visit WHERE citizenid = ?";
 
         return prepareSqlStatement(query, visitorId);
@@ -153,8 +176,26 @@ public class JpDbCommunicator {
                 ageLimit, discountAge);
     }
 
-    public PreparedStatement getInsertNewWorkerCleanEnclosureStatement(int workerId, int enclosureId) {
-        var insertStatement = "INSERT INTO WorkerKeepsCleanEnclosure(workerid, enclosureid) " +
+    public SqlStatementExecutionResult executeInsertNewDino(String dinoName, String dinoSpecies, int enclosureId) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getInsertNewDinoStatement(dinoName, dinoSpecies, enclosureId);
+        return executeSqlStatement(statement);
+    }
+
+    public PreparedStatement getInsertNewDinoStatement(String dinoName, String dinoSpecies, int enclosureId){
+        var insertStatement = "INSERT INTO Dinosaur(name, species, enclosure) " +
+                "VALUES(?, ?, ?)";
+
+        return prepareSqlStatement(insertStatement, dinoName, dinoSpecies, enclosureId);
+    }
+
+
+    public SqlStatementExecutionResult executeInsertNewWorker(String workerSpecialty, String workerSurname) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getInsertNewWorkerStatement(workerSpecialty, workerSurname);
+        return executeSqlStatement(statement);
+    }
+
+    public PreparedStatement getInsertNewWorkerStatement(String workerSpecialty, String workerSurname){
+        var insertStatement = "INSERT INTO Worker(specialty, surname) " +
                 "VALUES(?, ?)";
 
         return prepareSqlStatement(insertStatement, workerId, enclosureId);
@@ -220,14 +261,14 @@ public class JpDbCommunicator {
         return prepareSqlStatement(updateStatement, newWorkerSpecialty, newWorkerSurname, workerId);
     }
 
-    public PreparedStatement getUpdateWorkerCaresForDinoByIdsStatement(int workerId, int oldDinoId, int newDinoId) {
+    public PreparedStatement getUpdateWorkerCaresForDinoByIdsStatement(int workerId, int oldDinoId, int newDinoId){
         var updateStatement = "UPDATE WorkerLooksAfterDinosaur SET dinosaurid = ? " +
                 "WHERE workerid = ? AND dinosaurid = ?";
 
         return prepareSqlStatement(updateStatement, newDinoId, workerId, oldDinoId);
     }
 
-    public PreparedStatement getUpdateWorkerCleansEncByIdsStatement(int workerId, int oldEnclosureId, int newEnclosureId) {
+    public PreparedStatement getUpdateWorkerCleansEncByIdsStatement(int workerId, int oldEnclosureId, int newEnclosureId){
         var updateStatement = "UPDATE WorkerKeepsCleanEnclosure SET enclosureid = ? " +
                 "WHERE workerid = ? AND enclosureid = ?";
 
