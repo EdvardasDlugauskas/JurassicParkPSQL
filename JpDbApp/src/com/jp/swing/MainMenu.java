@@ -1,6 +1,8 @@
 package com.jp.swing;
 
 import com.jp.JpGui;
+import com.jp.RollbackFailedException;
+import com.jp.SqlExecFailedException;
 import com.jp.SqlStatementExecutionResult;
 
 import javax.swing.*;
@@ -10,6 +12,8 @@ import java.awt.event.MouseEvent;
 
 public class MainMenu {
     public JTabbedPane tabbedPane1;
+    public JPanel mainPanel;
+
     private JComboBox selectAllFromTable;
     private JButton selectAllFromTableButton;
     private JTextField dinoSpeciesTextField;
@@ -17,7 +21,6 @@ public class MainMenu {
     private JTextField dinosaurNameTextField;
     private JTextField enclosureIdTextField;
     private JButton insertNewDinosaurButton;
-    private JTextField workerSpecialtyTextField;
     private JTextField workerSurnameTextField;
     private JButton insertNewWorkerButton;
     private JTextField workerIdTextField;
@@ -25,12 +28,23 @@ public class MainMenu {
     private JButton insertNewWorkerDinoRelationButton;
     private JTextField moneySpenVisitorIdField;
     private JButton moneySpentWhereVisitorButton;
-    private JTextField workerIdTextField1;
-    private JButton executeButton;
-    private JButton showDinosaursButton;
-    private JButton button1;
-    private JButton button2;
-    private JButton button3;
+    private JTextField assignWorkerIdTextField;
+    private JButton assignDinoToWorkerButton;
+    private JTextField dinosaurSpeciesTextField;
+    private JTextField assignDinosaurNameField;
+    private JTextField assignDinosaurSpeciesField;
+    private JTextField assignEnclosureIdField;
+    private JComboBox workerSpecialtyCombobox;
+    private JTextField setSpecialtyWorkerId;
+    private JButton changeWorkerSpecialtyButton;
+    private JTextField setEnclosureDinoId;
+    private JButton updateDinoEnclosureButton;
+    private JComboBox setSpecialtyCombobox;
+    private JTextField deleteDinosaurIdField;
+    private JButton deleteDinosaurButton;
+    private JTextField deleteWorkerIdField;
+    private JButton deleteWorkerButton;
+    private JTextField setEnclosureEnclosureField;
     private JButton dinoButton;
 
     public void openQueryResultDialog(SqlStatementExecutionResult result)
@@ -83,7 +97,13 @@ public class MainMenu {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 var tableName = selectAllFromTable.getSelectedItem().toString();
-                var result = JpGui.dbCommunicator.executeSelectAllFromTableQuery(tableName);
+                SqlStatementExecutionResult result;
+                try {
+                    result = JpGui.dbCommunicator.executeSelectAllFromTableQuery(tableName);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                    return;
+                }
                 openQueryResultDialog(result);
             }
         });
@@ -92,7 +112,12 @@ public class MainMenu {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 var dinoSpecies = dinoSpeciesTextField.getText();
-                var result = JpGui.dbCommunicator.executeSelectEnclosureByDinoSpecies(dinoSpecies);
+                SqlStatementExecutionResult result = null;
+                try {
+                    result = JpGui.dbCommunicator.executeSelectEnclosureByDinoSpecies(dinoSpecies);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
                 openQueryResultDialog(result);
             }
         });
@@ -101,18 +126,155 @@ public class MainMenu {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 int visitorId;
-                try
+
+                var visitorIdStr = moneySpenVisitorIdField.getText();
+                if (!checkInt(visitorIdStr, "Visitor ID"))
                 {
-                    visitorId = Integer.parseInt(moneySpenVisitorIdField.getText());
-                }
-                catch (NumberFormatException e1)
-                {
-                    showErrorDialog("Visitor ID must be ant integer!");
                     return;
                 }
-                var result = JpGui.dbCommunicator.executeSelectEnclosureByVisitorId(visitorId);
+
+                visitorId = Integer.parseInt(visitorIdStr);
+                SqlStatementExecutionResult result = null;
+                try {
+                    result = JpGui.dbCommunicator.executeSelectEnclosureByVisitorId(visitorId);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
                 openQueryResultDialog(result);
             }
         });
+        insertNewDinosaurButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                var name = dinosaurNameTextField.getText();
+                var species = dinosaurSpeciesTextField.getText();
+                var enclosureIdText = enclosureIdTextField.getText();
+                if (!checkInt(enclosureIdText, "Enclosure ID"))
+                {
+                    return;
+                }
+                var enclosureId = Integer.parseInt(enclosureIdText);
+
+                try
+                {
+                    var result = JpGui.dbCommunicator.executeInsertNewDino(name, species, enclosureId);
+                }
+                catch (SqlExecFailedException | RollbackFailedException exc)
+                {
+                    showErrorDialog(exc.getCause().getMessage());
+                }
+            }
+        });
+        insertNewWorkerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                var workerSpecialty = (String) workerSpecialtyCombobox.getSelectedItem();
+                var workerSurname = workerSurnameTextField.getText();
+
+                try {
+                    JpGui.dbCommunicator.executeInsertNewWorker(workerSpecialty, workerSurname);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
+            }
+        });
+        assignDinoToWorkerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+
+                var name = assignDinosaurNameField.getText();
+                var species = assignDinosaurSpeciesField.getText();
+                var enclosureIdText = assignEnclosureIdField.getText();
+                if (!checkInt(enclosureIdText, "Enclosure ID"))
+                {
+                    return;
+                }
+                var enclosureId = Integer.parseInt(enclosureIdText);
+
+                var workerIdText = assignWorkerIdTextField.getText();
+                if (!checkInt(workerIdText, "Worker ID"))
+                {
+                    return;
+                }
+                var workerId = Integer.parseInt(workerIdText);
+
+                // TODO: EXECUTE QUERY
+            }
+        });
+        changeWorkerSpecialtyButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                var specialty = (String) setSpecialtyCombobox.getSelectedItem();
+
+                var workerIdText = setSpecialtyWorkerId.getText();
+                if (!checkInt(workerIdText, "Worker ID"))
+                {
+                    return;
+                }
+                var workerId = Integer.parseInt(workerIdText);
+
+                // TODO: EXECUTE QUERY
+            }
+        });
+        updateDinoEnclosureButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+
+                var enclosureIdText = setEnclosureEnclosureField.getText();
+                if (!checkInt(enclosureIdText, "Enclosure ID"))
+                {
+                    return;
+                }
+                var enclosureId = Integer.parseInt(enclosureIdText);
+
+                var dinoIdText = setEnclosureDinoId.getText();
+                if (!checkInt(dinoIdText, "Dino ID"))
+                {
+                    return;
+                }
+                var dinoId = Integer.parseInt(dinoIdText);
+
+                // TODO: execute query
+            }
+        });
+        deleteDinosaurButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                var dinoIdText = deleteDinosaurIdField.getText();
+                if (!checkInt(dinoIdText, "Dino ID"))
+                {
+                    return;
+                }
+                var dinoId = Integer.parseInt(dinoIdText);
+
+                var workerIdText = deleteWorkerIdField.getText();
+                if (!checkInt(workerIdText, "Worker ID"))
+                {
+                    return;
+                }
+                var workerId = Integer.parseInt(workerIdText);
+
+                // TODO: execute query
+            }
+        });
+    }
+
+    private boolean checkInt(String text, String message) {
+        try
+        {
+            Integer.parseInt(text);
+            return true;
+        }
+        catch (NumberFormatException e1)
+        {
+            showErrorDialog(message + " must be an integer!");
+            return false;
+        }
     }
 }

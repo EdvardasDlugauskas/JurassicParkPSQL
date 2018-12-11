@@ -33,7 +33,7 @@ public class Main {
         }
 
         var root = new JFrame("Jurassic Park PSQL");
-        var menu = new MainMenu().tabbedPane1;
+        var menu = new MainMenu().mainPanel;
         root.setVisible(true);
         root.add(menu);
         root.setPreferredSize(new Dimension(300, 200));

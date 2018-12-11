@@ -45,7 +45,7 @@ public class JpDbCommunicator {
     }
 
     //region SELECT Statements
-    public SqlStatementExecutionResult executeSelectAllFromTableQuery(String tableName) {
+    public SqlStatementExecutionResult executeSelectAllFromTableQuery(String tableName) throws RollbackFailedException, SqlExecFailedException {
         var statement = getSelectAllFromTableQuery(tableName);
         var result = executeSqlStatement(statement);
         return result;
@@ -63,7 +63,7 @@ public class JpDbCommunicator {
         return prepareSqlStatement(query, enclosureType);
     }
 
-    public SqlStatementExecutionResult executeSelectEnclosureByDinoSpecies(String dinoSpecies) {
+    public SqlStatementExecutionResult executeSelectEnclosureByDinoSpecies(String dinoSpecies) throws RollbackFailedException, SqlExecFailedException {
         var statement = getSelectEnclosureByDinoSpeciesQuery(dinoSpecies);
         var result = executeSqlStatement(statement);
         return result;
@@ -82,8 +82,7 @@ public class JpDbCommunicator {
     }
 
 
-    public SqlStatementExecutionResult executeSelectEnclosureByVisitorId(int visitorId)
-    {
+    public SqlStatementExecutionResult executeSelectEnclosureByVisitorId(int visitorId) throws RollbackFailedException, SqlExecFailedException {
         var statement = getSelectEnclosureByVisitorIdQuery(visitorId);
         var result = executeSqlStatement(statement);
         return result;
@@ -140,11 +139,22 @@ public class JpDbCommunicator {
                 ageLimit, discountAge);
     }
 
+    public SqlStatementExecutionResult executeInsertNewDino(String dinoName, String dinoSpecies, int enclosureId) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getInsertNewDinoStatement(dinoName, dinoSpecies, enclosureId);
+        return executeSqlStatement(statement);
+    }
+
     public PreparedStatement getInsertNewDinoStatement(String dinoName, String dinoSpecies, int enclosureId){
         var insertStatement = "INSERT INTO Dinosaur(name, species, enclosure) " +
                 "VALUES(?, ?, ?)";
 
         return prepareSqlStatement(insertStatement, dinoName, dinoSpecies, enclosureId);
+    }
+
+
+    public SqlStatementExecutionResult executeInsertNewWorker(String workerSpecialty, String workerSurname) throws RollbackFailedException, SqlExecFailedException {
+        var statement = getInsertNewWorkerStatement(workerSpecialty, workerSurname);
+        return executeSqlStatement(statement);
     }
 
     public PreparedStatement getInsertNewWorkerStatement(String workerSpecialty, String workerSurname){
@@ -258,14 +268,8 @@ public class JpDbCommunicator {
     }
     //endregion
 
-    private SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlStatement)
-    {
-        try {
-            return executeSqlStatement(sqlStatement, true);
-        } catch (SqlExecFailedException | RollbackFailedException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlStatement) throws RollbackFailedException, SqlExecFailedException {
+        return executeSqlStatement(sqlStatement, true);
     }
 
     /**
