@@ -107,7 +107,7 @@ public class JpDbCommunicator {
     }
     //endregion
 
-    //region INSERT statements
+    //region INSERT Statements
     public PreparedStatement getInsertNewEnclosureStatement(String enclosureType, double size, double costNoDiscount,
                                                             double costWithDiscount, int ageLimit, int discountAge){
         var insertStatement = "INSERT INTO Enclosure(enclosuretype, size, costnodiscount, costwithdiscount, " +
@@ -174,7 +174,7 @@ public class JpDbCommunicator {
     }
     //endregion
 
-    //region UPDATE statements
+    //region UPDATE Statements
     public PreparedStatement getUpdateEnclosureByIdStatement(int enclosureId, String newEncType, double newEncSize, double newEncCostNDisc,
                                                              double newEncCostWDisc, int newEncAgeLimit, int newEncDiscAge){
         var updateStatement = "UPDATE Enclosure Set enclosuretype = ?, size = ?, costnodiscount = ?, costwithdiscount = ?, " +
@@ -198,14 +198,14 @@ public class JpDbCommunicator {
         return prepareSqlStatement(updateStatement, newWorkerSpecialty, newWorkerSurname, workerId);
     }
 
-    public PreparedStatement getUpdateWorkerCaringForDinoByIdsStatement(int workerId, int oldDinoId, int newDinoId){
+    public PreparedStatement getUpdateWorkerCaresForDinoByIdsStatement(int workerId, int oldDinoId, int newDinoId){
         var updateStatement = "UPDATE WorkerLooksAfterDinosaur SET dinosaurid = ? " +
                 "WHERE workerid = ? AND dinosaurid = ?";
 
         return prepareSqlStatement(updateStatement, newDinoId, workerId, oldDinoId);
     }
 
-    public PreparedStatement getUpdateWorkerCleaningEncByIdsStatement(int workerId, int oldEnclosureId, int newEnclosureId){
+    public PreparedStatement getUpdateWorkerCleansEncByIdsStatement(int workerId, int oldEnclosureId, int newEnclosureId){
         var updateStatement = "UPDATE WorkerKeepsCleanEnclosure SET enclosureid = ? " +
                 "WHERE workerid = ? AND enclosureid = ?";
 
@@ -232,6 +232,34 @@ public class JpDbCommunicator {
                 "WHERE visitid = ? AND facilityid = ?";
 
         return prepareSqlStatement(updateStatement, newFacilityId, newMoneySpent, visitId, oldFacilityId);
+    }
+    //endregion
+
+    //region DELETE Statements
+    public PreparedStatement getDeleteDinoByIdStatement(int dinoId){
+        var deleteStatement = "DELETE FROM Dinosaur WHERE id = ?";
+
+        return prepareSqlStatement(deleteStatement, dinoId);
+    }
+
+    public PreparedStatement getDeleteWorkerByIdStatement(int workerId){
+        var deleteStatement = "DELETE FROM Worker WHERE id = ?";
+
+        return prepareSqlStatement(deleteStatement, workerId);
+    }
+
+    public PreparedStatement getDeleteWorkerCaresForDinoByIdStatement(int workerId){
+        var deleteStatement = "DELETE FROM WorkerLooksAfterDinosaur " +
+                "WHERE workerid = ?";
+
+        return prepareSqlStatement(deleteStatement, workerId);
+    }
+
+    public PreparedStatement getDeleteWorkerCleansEnclosureByIdStatement(int workerId){
+        var deleteStatement = "DELETE FROM WorkerKeepsCleanEnclosure " +
+                "WHERE workerid = ?";
+
+        return prepareSqlStatement(deleteStatement, workerId);
     }
     //endregion
 
