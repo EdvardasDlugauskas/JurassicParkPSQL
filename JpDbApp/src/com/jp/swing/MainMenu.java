@@ -25,6 +25,12 @@ public class MainMenu {
     private JButton insertNewWorkerDinoRelationButton;
     private JTextField moneySpenVisitorIdField;
     private JButton moneySpentWhereVisitorButton;
+    private JTextField workerIdTextField1;
+    private JButton executeButton;
+    private JButton showDinosaursButton;
+    private JButton button1;
+    private JButton button2;
+    private JButton button3;
     private JButton dinoButton;
 
     public void openQueryResultDialog(SqlStatementExecutionResult result)
