@@ -51,13 +51,13 @@ public class JpDbCommunicator {
         return result;
     }
 
-    public PreparedStatement getSelectAllFromTableQuery(String tableName){
+    public PreparedStatement getSelectAllFromTableQuery(String tableName) {
         var query = "SELECT * FROM " + tableName;
 
         return prepareSqlStatement(query);
     }
 
-    public PreparedStatement getSelectEnclosureByTypeQuery(String enclosureType){
+    public PreparedStatement getSelectEnclosureByTypeQuery(String enclosureType) {
         var query = "SELECT * FROM Enclosure WHERE enclosuretype = ?";
 
         return prepareSqlStatement(query, enclosureType);
@@ -69,7 +69,7 @@ public class JpDbCommunicator {
         return result;
     }
 
-    public PreparedStatement getSelectEnclosureByDinoSpeciesQuery(String dinoSpecies){
+    public PreparedStatement getSelectEnclosureByDinoSpeciesQuery(String dinoSpecies) {
         var query =
                 "WITH SpeciesInEnclosure(enclosureId, species) AS " +
                         "(SELECT enclosure, species FROM Dinosaur " +
@@ -87,7 +87,7 @@ public class JpDbCommunicator {
         return result;
     }
 
-    public PreparedStatement getSelectEnclosureByVisitorIdQuery(int visitorId){
+    public PreparedStatement getSelectEnclosureByVisitorIdQuery(int visitorId) {
         var query =
                 "SELECT E.* FROM Enclosure AS E, VisitBuysTicketEnclosure AS VBT, _Visit AS V " +
                         "WHERE E.id = VBT.enclosureid " +
@@ -111,8 +111,21 @@ public class JpDbCommunicator {
         return prepareSqlStatement(insertStatement, workerSpecialty, workerSurname);
     }
 
-    public LinkedList<SqlStatementExecutionResult> executeInsertNewDinoAndCaringWorkerStatement(String dinoName, String dinoSpecies,
-                                                                                                 int enclosureId, int workerId) {
+    public PreparedStatement getInsertNewWorkerCaringForDinoStatement(int workerId, int dinoId) {
+        var insertStatement = "INSERT INTO WorkerLooksAfterdinosaur(workerid, dinosaurid) " +
+                "VALUES(?, ?)";
+
+        return prepareSqlStatement(insertStatement, workerId, dinoId);
+    }
+
+    public SqlStatementExecutionResult executeNewWorkerDinoRelation(int workerId, int dinoId) {
+        var statement = getInsertNewWorkerCaringForDinoStatement(workerId, dinoId);
+
+        return executeSqlStatement(statement);
+    }
+
+    public SqlStatementExecutionResult executeInsertNewDinoAndCaringWorkerStatement(String dinoName, String dinoSpecies,
+                                                                                    int enclosureId, int workerId) {
         int dinoId = 0;
         int index = 0;
 
@@ -124,16 +137,71 @@ public class JpDbCommunicator {
         dinoId = Integer.parseInt(getDinoIdRes.resultList.get(0).get(0));
 
         var insertCaringWorker = getInsertNewWorkerCaringForDinoStatement(workerId, dinoId);
-        return executeSqlStatementsAndHandelExcep(insertCaringWorker);
+        return executeSqlStatement(insertCaringWorker);
+    }
+
+    public PreparedStatement getUpdateWorkerSpecByIdStatement(int workerId, String newWorkerSpecialty) {
+        var updateStatement = "UPDATE Worker SET specialty = ?" +
+                "WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newWorkerSpecialty, workerId);
+    }
+
+    public SqlStatementExecutionResult executeUpdateWorkerSpecByIdStatement(int workerId, String workerSpecialty) {
+        var updateWorkerSpec = getUpdateWorkerSpecByIdStatement(workerId, workerSpecialty);
+
+        return executeSqlStatement(updateWorkerSpec);
+    }
+
+    public PreparedStatement getUpdateDinoEnclosureStatement(int dinoId, int newDinoEnclosureId) {
+        var updateStatement = "UPDATE Dinosaur SET enclosure = ? " +
+                "WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newDinoEnclosureId, dinoId);
+    }
+
+    public PreparedStatement getUpdateEnclosureTicketCostByIdStatement(int enclosureId, double newEncCostNDisc,
+                                                                       double newEncCostWDisc) {
+        var updateStatement = "UPDATE Enclosure Set costnodiscount = ?, costwithdiscount = ? " +
+                "WHERE id = ?";
+
+        return prepareSqlStatement(updateStatement, newEncCostNDisc, newEncCostWDisc, enclosureId);
+    }
+
+    public LinkedList<SqlStatementExecutionResult> executeUpdateEncAndTicketCost(int dinoId, int newEnclosureId, double newEncCostNDisc,
+                                                                     double newEncCostWDisc){
+        var updateDinoEnc = getUpdateDinoEnclosureStatement(dinoId, newEnclosureId);
+        var updateEncTicketCost = getUpdateEnclosureTicketCostByIdStatement(newEnclosureId, newEncCostNDisc, newEncCostWDisc);
+
+        return executeSqlStatementsAndHandelExcep(updateDinoEnc, updateEncTicketCost);
+    }
+
+    public PreparedStatement getDeleteDinoByIdStatement(int dinoId) {
+        var deleteStatement = "DELETE FROM Dinosaur WHERE id = ?";
+
+        return prepareSqlStatement(deleteStatement, dinoId);
+    }
+
+    public SqlStatementExecutionResult executeDeleteDino(int dinoId){
+        var deleteDino = getDeleteDinoByIdStatement(dinoId);
+
+        return executeSqlStatement(deleteDino);
+    }
+
+    public PreparedStatement getDeleteWorkerByIdStatement(int workerId) {
+        var deleteStatement = "DELETE FROM Worker WHERE id = ?";
+
+        return prepareSqlStatement(deleteStatement, workerId);
+    }
+
+    public SqlStatementExecutionResult executeDeleteWorker(int workerId){
+        var deleteWorker = getDeleteWorkerByIdStatement(workerId);
+
+        return executeSqlStatement(deleteWorker);
     }
     //endregion
 
     //region SELECT Statements
-    public PreparedStatement getSelectEnclosureByTypeQuery(String enclosureType) {
-        var query = "SELECT * FROM Enclosure WHERE enclosuretype = ?";
-
-        return prepareSqlStatement(query, enclosureType);
-    }
 
     public PreparedStatement getSelectDinoByNameQuery(String dinoName) {
         var query = "SELECT * FROM Dinosaur WHERE name = ?";
@@ -181,31 +249,9 @@ public class JpDbCommunicator {
         return executeSqlStatement(statement);
     }
 
-    public PreparedStatement getInsertNewDinoStatement(String dinoName, String dinoSpecies, int enclosureId){
-        var insertStatement = "INSERT INTO Dinosaur(name, species, enclosure) " +
-                "VALUES(?, ?, ?)";
-
-        return prepareSqlStatement(insertStatement, dinoName, dinoSpecies, enclosureId);
-    }
-
-
     public SqlStatementExecutionResult executeInsertNewWorker(String workerSpecialty, String workerSurname) throws RollbackFailedException, SqlExecFailedException {
         var statement = getInsertNewWorkerStatement(workerSpecialty, workerSurname);
         return executeSqlStatement(statement);
-    }
-
-    public PreparedStatement getInsertNewWorkerStatement(String workerSpecialty, String workerSurname){
-        var insertStatement = "INSERT INTO Worker(specialty, surname) " +
-                "VALUES(?, ?)";
-
-        return prepareSqlStatement(insertStatement, workerId, enclosureId);
-    }
-
-    public PreparedStatement getInsertNewWorkerCaringForDinoStatement(int workerId, int dinoId) {
-        var insertStatement = "INSERT INTO WorkerLooksAfterdinosaur(workerid, dinosaurid) " +
-                "VALUES(?, ?)";
-
-        return prepareSqlStatement(insertStatement, workerId, dinoId);
     }
 
     public PreparedStatement getInsertNewVisitorStatement(String visitorName, String visitorSurname, Date visitorBirthday) {
@@ -299,18 +345,6 @@ public class JpDbCommunicator {
     //endregion
 
     //region DELETE Statements
-    public PreparedStatement getDeleteDinoByIdStatement(int dinoId) {
-        var deleteStatement = "DELETE FROM Dinosaur WHERE id = ?";
-
-        return prepareSqlStatement(deleteStatement, dinoId);
-    }
-
-    public PreparedStatement getDeleteWorkerByIdStatement(int workerId) {
-        var deleteStatement = "DELETE FROM Worker WHERE id = ?";
-
-        return prepareSqlStatement(deleteStatement, workerId);
-    }
-
     public PreparedStatement getDeleteWorkerCaresForDinoByIdStatement(int workerId) {
         var deleteStatement = "DELETE FROM WorkerLooksAfterDinosaur " +
                 "WHERE workerid = ?";

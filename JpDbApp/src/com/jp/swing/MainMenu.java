@@ -45,6 +45,8 @@ public class MainMenu {
     private JTextField deleteWorkerIdField;
     private JButton deleteWorkerButton;
     private JTextField setEnclosureEnclosureField;
+    private JTextField setEnclosureNewNoDPrice;
+    private JTextField setEnclosureNewWDPrice;
     private JButton dinoButton;
 
     public void openQueryResultDialog(SqlStatementExecutionResult result)
@@ -180,6 +182,18 @@ public class MainMenu {
                 }
             }
         });
+        insertNewWorkerDinoRelationButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                // TODO: add checks.
+                var workerId = Integer.parseInt(workerIdTextField.getText());
+                var dinoId = Integer.parseInt(dinosaurIdTextField.getText());
+
+                JpGui.dbCommunicator.executeNewWorkerDinoRelation(workerId, dinoId);
+            }
+        });
+
         assignDinoToWorkerButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -201,7 +215,7 @@ public class MainMenu {
                 }
                 var workerId = Integer.parseInt(workerIdText);
 
-                // TODO: EXECUTE QUERY
+                JpGui.dbCommunicator.executeInsertNewDinoAndCaringWorkerStatement(name, species, enclosureId, workerId);
             }
         });
         changeWorkerSpecialtyButton.addMouseListener(new MouseAdapter() {
@@ -217,7 +231,7 @@ public class MainMenu {
                 }
                 var workerId = Integer.parseInt(workerIdText);
 
-                // TODO: EXECUTE QUERY
+                JpGui.dbCommunicator.executeUpdateWorkerSpecByIdStatement(workerId, specialty);
             }
         });
         updateDinoEnclosureButton.addMouseListener(new MouseAdapter() {
@@ -239,7 +253,11 @@ public class MainMenu {
                 }
                 var dinoId = Integer.parseInt(dinoIdText);
 
-                // TODO: execute query
+                // TODO: add type checks.
+                var newNoDCost = Double.parseDouble(setEnclosureNewNoDPrice.getText());
+                var newWithDCost = Double.parseDouble(setEnclosureNewWDPrice.getText());
+
+                JpGui.dbCommunicator.executeUpdateEncAndTicketCost(dinoId, enclosureId, newNoDCost, newWithDCost);
             }
         });
         deleteDinosaurButton.addMouseListener(new MouseAdapter() {
@@ -253,14 +271,20 @@ public class MainMenu {
                 }
                 var dinoId = Integer.parseInt(dinoIdText);
 
-                var workerIdText = deleteWorkerIdField.getText();
-                if (!checkInt(workerIdText, "Worker ID"))
-                {
-                    return;
-                }
-                var workerId = Integer.parseInt(workerIdText);
+                JpGui.dbCommunicator.executeDeleteDino(dinoId);
+            }
+        });
+        deleteWorkerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            var workerIdText = deleteWorkerIdField.getText();
+            if (!checkInt(workerIdText, "Worker ID"))
+            {
+                return;
+            }
+            var workerId = Integer.parseInt(workerIdText);
 
-                // TODO: execute query
+            JpGui.dbCommunicator.executeDeleteWorker(workerId);
             }
         });
     }
