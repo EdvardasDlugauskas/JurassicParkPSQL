@@ -80,8 +80,8 @@ CREATE TABLE WorkerKeepsCleanEnclosure
   EnclosureId INT NOT NULL,
 
   PRIMARY KEY (WorkerId, EnclosureId),
-  FOREIGN KEY (WorkerId) REFERENCES Worker(id),
-  FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id)
+  FOREIGN KEY (WorkerId) REFERENCES Worker(id) ON DELETE CASCADE,
+  FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id) ON DELETE NO ACTION
 );
 
 CREATE TABLE Dinosaur
@@ -127,7 +127,7 @@ CREATE TABLE VisitBuysTicketEnclosure
 
   PRIMARY KEY (VisitId, EnclosureId),
   FOREIGN KEY (VisitId) REFERENCES _Visit(id) ON DELETE CASCADE,
-  FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id)
+  FOREIGN KEY (EnclosureId) REFERENCES Enclosure(id) ON DELETE NO ACTION
 );
 
 CREATE TABLE VisitUsesFacility
@@ -138,5 +138,5 @@ CREATE TABLE VisitUsesFacility
 
   PRIMARY KEY (VisitId, FacilityId),
   FOREIGN KEY (VisitId) REFERENCES _Visit(id),
-  FOREIGN KEY (FacilityId) REFERENCES Facility(id)
+  FOREIGN KEY (FacilityId) REFERENCES Facility(id) ON DELETE NO ACTION
 );
