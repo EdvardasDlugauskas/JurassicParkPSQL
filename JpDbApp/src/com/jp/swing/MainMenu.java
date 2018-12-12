@@ -47,7 +47,6 @@ public class MainMenu {
     private JTextField setEnclosureEnclosureField;
     private JTextField setEnclosureNewNoDPrice;
     private JTextField setEnclosureNewWDPrice;
-    private JButton dinoButton;
 
     public void openQueryResultDialog(SqlStatementExecutionResult result)
     {

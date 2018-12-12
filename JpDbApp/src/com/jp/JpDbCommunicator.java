@@ -11,8 +11,13 @@ public class JpDbCommunicator {
     private Connection jpDbCon;
 
     private static final String DB_URL = "jdbc:postgresql://localhost:1234/studentu";
+
+
+    //region Sensitive password information
     private static final String USER_NAME = username;
     private static final String USER_PASS = password;
+    //endregion
+
 
     JpDbCommunicator() throws JSchException {
         connectToSsh();
