@@ -266,7 +266,11 @@ public class MainMenu {
 
                 var newWithDCost = Double.parseDouble(newWithDCostText);
 
-                JpGui.dbCommunicator.executeUpdateEncAndTicketCost(dinoId, enclosureId, newNoDCost, newWithDCost);
+                try {
+                    JpGui.dbCommunicator.executeUpdateEncAndTicketCost(dinoId, enclosureId, newNoDCost, newWithDCost);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
             }
         });
         deleteDinosaurButton.addMouseListener(new MouseAdapter() {

@@ -14,8 +14,8 @@ public class JpDbCommunicator {
 
 
     //region Sensitive password information
-    private static final String USER_NAME = "";
-    private static final String USER_PASS = "";
+    private static final String USER_NAME = username;
+    private static final String USER_PASS = password;
     //endregion
 
 
@@ -174,11 +174,11 @@ public class JpDbCommunicator {
     }
 
     public LinkedList<SqlStatementExecutionResult> executeUpdateEncAndTicketCost(int dinoId, int newEnclosureId, double newEncCostNDisc,
-                                                                     double newEncCostWDisc){
+                                                                     double newEncCostWDisc) throws RollbackFailedException, SqlExecFailedException {
         var updateDinoEnc = getUpdateDinoEnclosureStatement(dinoId, newEnclosureId);
         var updateEncTicketCost = getUpdateEnclosureTicketCostByIdStatement(newEnclosureId, newEncCostNDisc, newEncCostWDisc);
 
-        return executeSqlStatementsAndHandelExcep(updateDinoEnc, updateEncTicketCost);
+        return executeSqlStatements(updateDinoEnc, updateEncTicketCost);
     }
 
     public PreparedStatement getDeleteDinoByIdStatement(int dinoId) {

@@ -29,7 +29,7 @@ public class Main {
             }
         }
         catch (UnsupportedLookAndFeelException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            // todo handle exception
+            // ignore
         }
 
         var root = new JFrame("Jurassic Park PSQL");
