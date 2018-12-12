@@ -68,31 +68,6 @@ public class MainMenu {
     }
 
     public MainMenu() {
-//        dinoButton.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseReleased(MouseEvent e) {
-//                super.mouseReleased(e);
-//                var query = Main.app.dbCommunicator.getSelectDinoByEnclosureQuery(2);
-//                SqlStatementExecutionResult result = null;
-//                try {
-//                    result = Main.app.dbCommunicator.executeSqlStatement(query, true);
-//                } catch (SqlExecFailedException | RollbackFailedException e1) {
-//                    e1.printStackTrace();
-//                }
-//
-//                var table = new JTable(result);
-//                var scrollPane = new JScrollPane(table);
-//
-//                var jdialog = new JDialog();
-//                jdialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//                jdialog.setContentPane(scrollPane);
-//
-//                jdialog.setSize(200, 200);
-//                jdialog.setPreferredSize(new Dimension(200, 200));
-//                jdialog.setVisible(true);
-//
-//            }
-//        });
         selectAllFromTableButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -167,6 +142,7 @@ public class MainMenu {
                 }
             }
         });
+
         insertNewWorkerButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -181,15 +157,30 @@ public class MainMenu {
                 }
             }
         });
+
         insertNewWorkerDinoRelationButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                // TODO: add checks.
-                var workerId = Integer.parseInt(workerIdTextField.getText());
-                var dinoId = Integer.parseInt(dinosaurIdTextField.getText());
+                var workerIdText = workerIdTextField.getText();
+                if (!checkInt(workerIdText, "Worker ID"))
+                {
+                    return;
+                }
+                var workerId = Integer.parseInt(workerIdText);
 
-                JpGui.dbCommunicator.executeNewWorkerDinoRelation(workerId, dinoId);
+                var dinoIdText = dinosaurIdTextField.getText();
+                if (!checkInt(dinoIdText, "Dino ID"))
+                {
+                    return;
+                }
+                var dinoId = Integer.parseInt(dinoIdText);
+
+                try {
+                    JpGui.dbCommunicator.executeNewWorkerDinoRelation(workerId, dinoId);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
             }
         });
 
@@ -214,7 +205,11 @@ public class MainMenu {
                 }
                 var workerId = Integer.parseInt(workerIdText);
 
-                JpGui.dbCommunicator.executeInsertNewDinoAndCaringWorkerStatement(name, species, enclosureId, workerId);
+                try {
+                    JpGui.dbCommunicator.executeInsertNewDinoAndCaringWorkerStatement(name, species, enclosureId, workerId);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
             }
         });
         changeWorkerSpecialtyButton.addMouseListener(new MouseAdapter() {
@@ -230,7 +225,11 @@ public class MainMenu {
                 }
                 var workerId = Integer.parseInt(workerIdText);
 
-                JpGui.dbCommunicator.executeUpdateWorkerSpecByIdStatement(workerId, specialty);
+                try {
+                    JpGui.dbCommunicator.executeUpdateWorkerSpecByIdStatement(workerId, specialty);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
             }
         });
         updateDinoEnclosureButton.addMouseListener(new MouseAdapter() {
@@ -252,9 +251,20 @@ public class MainMenu {
                 }
                 var dinoId = Integer.parseInt(dinoIdText);
 
-                // TODO: add type checks.
-                var newNoDCost = Double.parseDouble(setEnclosureNewNoDPrice.getText());
-                var newWithDCost = Double.parseDouble(setEnclosureNewWDPrice.getText());
+                var newNoDCostText = setEnclosureNewNoDPrice.getText();
+                if (!checkDouble(newNoDCostText, "New Cost without Discount"))
+                {
+                    return;
+                }
+                var newNoDCost = Double.parseDouble(newNoDCostText);
+
+                var newWithDCostText = setEnclosureNewWDPrice.getText();
+                if (!checkDouble(newWithDCostText, "New Cost with Discount"))
+                {
+                    return;
+                }
+
+                var newWithDCost = Double.parseDouble(newWithDCostText);
 
                 JpGui.dbCommunicator.executeUpdateEncAndTicketCost(dinoId, enclosureId, newNoDCost, newWithDCost);
             }
@@ -270,7 +280,11 @@ public class MainMenu {
                 }
                 var dinoId = Integer.parseInt(dinoIdText);
 
-                JpGui.dbCommunicator.executeDeleteDino(dinoId);
+                try {
+                    JpGui.dbCommunicator.executeDeleteDino(dinoId);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
             }
         });
         deleteWorkerButton.addMouseListener(new MouseAdapter() {
@@ -283,9 +297,27 @@ public class MainMenu {
             }
             var workerId = Integer.parseInt(workerIdText);
 
-            JpGui.dbCommunicator.executeDeleteWorker(workerId);
+                try {
+                    JpGui.dbCommunicator.executeDeleteWorker(workerId);
+                } catch (RollbackFailedException | SqlExecFailedException e1) {
+                    showErrorDialog(e1.getCause().getMessage());
+                }
             }
         });
+    }
+
+    private boolean checkDouble(String text, String message)
+    {
+        try
+        {
+            Double.parseDouble(text);
+            return true;
+        }
+        catch (NumberFormatException e1)
+        {
+            showErrorDialog(message + " must be a double!");
+            return false;
+        }
     }
 
     private boolean checkInt(String text, String message) {

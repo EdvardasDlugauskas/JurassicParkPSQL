@@ -14,8 +14,8 @@ public class JpDbCommunicator {
 
 
     //region Sensitive password information
-    private static final String USER_NAME = username;
-    private static final String USER_PASS = password;
+    private static final String USER_NAME = "";
+    private static final String USER_PASS = "";
     //endregion
 
 
@@ -123,14 +123,14 @@ public class JpDbCommunicator {
         return prepareSqlStatement(insertStatement, workerId, dinoId);
     }
 
-    public SqlStatementExecutionResult executeNewWorkerDinoRelation(int workerId, int dinoId) {
+    public SqlStatementExecutionResult executeNewWorkerDinoRelation(int workerId, int dinoId) throws RollbackFailedException, SqlExecFailedException {
         var statement = getInsertNewWorkerCaringForDinoStatement(workerId, dinoId);
 
         return executeSqlStatement(statement);
     }
 
     public SqlStatementExecutionResult executeInsertNewDinoAndCaringWorkerStatement(String dinoName, String dinoSpecies,
-                                                                                    int enclosureId, int workerId) {
+                                                                                    int enclosureId, int workerId) throws RollbackFailedException, SqlExecFailedException {
         int dinoId = 0;
         int index = 0;
 
@@ -152,7 +152,7 @@ public class JpDbCommunicator {
         return prepareSqlStatement(updateStatement, newWorkerSpecialty, workerId);
     }
 
-    public SqlStatementExecutionResult executeUpdateWorkerSpecByIdStatement(int workerId, String workerSpecialty) {
+    public SqlStatementExecutionResult executeUpdateWorkerSpecByIdStatement(int workerId, String workerSpecialty) throws RollbackFailedException, SqlExecFailedException {
         var updateWorkerSpec = getUpdateWorkerSpecByIdStatement(workerId, workerSpecialty);
 
         return executeSqlStatement(updateWorkerSpec);
@@ -187,7 +187,7 @@ public class JpDbCommunicator {
         return prepareSqlStatement(deleteStatement, dinoId);
     }
 
-    public SqlStatementExecutionResult executeDeleteDino(int dinoId){
+    public SqlStatementExecutionResult executeDeleteDino(int dinoId) throws RollbackFailedException, SqlExecFailedException {
         var deleteDino = getDeleteDinoByIdStatement(dinoId);
 
         return executeSqlStatement(deleteDino);
@@ -199,7 +199,7 @@ public class JpDbCommunicator {
         return prepareSqlStatement(deleteStatement, workerId);
     }
 
-    public SqlStatementExecutionResult executeDeleteWorker(int workerId){
+    public SqlStatementExecutionResult executeDeleteWorker(int workerId) throws RollbackFailedException, SqlExecFailedException {
         var deleteWorker = getDeleteWorkerByIdStatement(workerId);
 
         return executeSqlStatement(deleteWorker);
@@ -527,13 +527,8 @@ public class JpDbCommunicator {
         }
     }
 
-    private SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlStatement) {
-        try {
-            return executeSqlStatement(sqlStatement, true);
-        } catch (SqlExecFailedException | RollbackFailedException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private SqlStatementExecutionResult executeSqlStatement(PreparedStatement sqlStatement) throws RollbackFailedException, SqlExecFailedException {
+        return executeSqlStatement(sqlStatement, true);
     }
 
     private SqlStatementExecutionResult executeSqlStatementNoCommit(PreparedStatement sqlStatement) {
